@@ -49,53 +49,52 @@ class AblationStudyAnalyzer:
 
         
     def create_ablation_visualizations(self):
-        """创建分离的消融实验可视化图 - Top-k特征数量和决策树深度分别保存"""
+        """创建消融实验可视化图 - TopK和决策树深度图（避免重复生成）"""
         if not self.ablation_results:
             print("❌ No ablation results to visualize")
             return None
             
         df = pd.DataFrame(self.ablation_results)
         
-        # 数据集颜色映射 - 使用简单的颜色区分
+        # 数据集颜色映射 - 使用统一好看的配色
         datasets = df['dataset'].unique()
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # 蓝色、橙色、绿色
+        colors = ['#2E86AB', '#A23B72', '#F18F01']  # 蓝色、紫色、橙色 - 现代配色
         dataset_colors = dict(zip(datasets, colors[:len(datasets)]))
         
         saved_plots = []
         
-        # 1. Top-k特征数量分析 (如果数据中有k列)
+        # 1. Top-k特征数量分析 (如果数据中有k列且还没生成过)
         if 'k' in df.columns:
-            fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
-            self._plot_topk_ablation(df, ax1, dataset_colors)
-            plt.tight_layout()
-            plot_path1 = f'results/ablation_study_topk_{self.experiment_timestamp}.png'
-            plt.savefig(plot_path1, dpi=300, bbox_inches='tight', facecolor='white')
-            plt.close()
-            saved_plots.append(plot_path1)
-            print(f"✅ Top-k ablation plot saved: {plot_path1}")
-        else:
-            # 如果没有k列，则绘制α参数
-            fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
-            self._plot_alpha_ablation(df, ax1, dataset_colors)
-            plt.tight_layout()
-            plot_path1 = f'results/ablation_study_alpha_{self.experiment_timestamp}.png'
-            plt.savefig(plot_path1, dpi=300, bbox_inches='tight', facecolor='white')
-            plt.close()
-            saved_plots.append(plot_path1)
-            print(f"✅ Alpha ablation plot saved: {plot_path1}")
+            topk_plot_path = f'results/topk_ablation_visualization_{self.experiment_timestamp}.png'
+            # 检查是否已存在，避免重复生成
+            import os
+            if not os.path.exists(topk_plot_path):
+                fig1, ax1 = plt.subplots(1, 1, figsize=(12, 8))
+                self._plot_topk_ablation(df, ax1, dataset_colors)
+                plt.tight_layout()
+                plt.savefig(topk_plot_path, dpi=300, bbox_inches='tight', facecolor='white')
+                plt.close()
+                saved_plots.append(topk_plot_path)
+                print(f"✅ Top-k ablation plot saved: {topk_plot_path}")
+            else:
+                print(f"📋 Top-k ablation plot already exists: {topk_plot_path}")
         
-        # 2. 决策树深度分析 (如果数据中有max_depth列)
+        # 2. 决策树深度分析 (如果数据中有max_depth列且还没生成过)
         if 'max_depth' in df.columns:
-            fig2, ax2 = plt.subplots(1, 1, figsize=(10, 7))
-            self._plot_depth_ablation(df, ax2, dataset_colors)
-            plt.tight_layout()
-            plot_path2 = f'results/ablation_study_depth_{self.experiment_timestamp}.png'
-            plt.savefig(plot_path2, dpi=300, bbox_inches='tight', facecolor='white')
-            plt.close()
-            saved_plots.append(plot_path2)
-            print(f"✅ Depth ablation plot saved: {plot_path2}")
+            depth_plot_path = f'results/depth_ablation_visualization_{self.experiment_timestamp}.png'
+            import os
+            if not os.path.exists(depth_plot_path):
+                fig2, ax2 = plt.subplots(1, 1, figsize=(12, 8))
+                self._plot_depth_ablation(df, ax2, dataset_colors)
+                plt.tight_layout()
+                plt.savefig(depth_plot_path, dpi=300, bbox_inches='tight', facecolor='white')
+                plt.close()
+                saved_plots.append(depth_plot_path)
+                print(f"✅ Depth ablation plot saved: {depth_plot_path}")
+            else:
+                print(f"📋 Depth ablation plot already exists: {depth_plot_path}")
         
-        print(f"✅ All ablation visualizations completed")
+        print(f"✅ Ablation visualizations completed")
         return saved_plots
         
     def _plot_topk_ablation(self, df, ax, dataset_colors):
@@ -132,21 +131,31 @@ class AblationStudyAnalyzer:
             ax.axvline(x=max_k, color=dataset_colors[dataset], 
                       linestyle='--', alpha=0.7, linewidth=1.5)
             
-            # 添加最高点标注，使用更分散的偏移量避免重叠
+            # 添加最高点标注，使用动态偏移量避免重叠
+            # 根据数据集和k值位置动态调整标注位置
             if dataset == 'uci':
-                offset_x, offset_y = 10, 25  # UCI位置
+                if max_k < 15:  # k值较小，标注在右上
+                    offset_x, offset_y = 15, 35
+                else:  # k值较大，标注在左上
+                    offset_x, offset_y = -50, 35
             elif dataset == 'australian':
-                offset_x, offset_y = 10, -25  # Australian位置
+                if max_k < 15:  # k值较小，标注在右下
+                    offset_x, offset_y = 15, -35
+                else:  # k值较大，标注在左下
+                    offset_x, offset_y = -50, -35
             else:  # german
-                offset_x, offset_y = 10, 0   # German位置（居中）
+                if max_k < 15:  # k值较小，标注在右侧
+                    offset_x, offset_y = 15, 5
+                else:  # k值较大，标注在左侧
+                    offset_x, offset_y = -50, 5
                 
             # 显示k值和准确率（显示4位小数）
             ax.annotate(f'k={max_k}\n{max_acc:.4f}', 
                        xy=(max_k, max_acc), 
                        xytext=(offset_x, offset_y), textcoords='offset points',
-                       fontsize=10, color=dataset_colors[dataset],
-                       fontweight='bold', ha='left',
-                       bbox=dict(boxstyle='round,pad=0.4', facecolor='white', alpha=0.95, 
+                       fontsize=9, color=dataset_colors[dataset],
+                       fontweight='bold', ha='center',
+                       bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.95, 
                                edgecolor=dataset_colors[dataset], linewidth=1.5))
                                
             print(f"📊 {dataset.upper()} - 整体最优: k={max_k}, accuracy={max_acc:.4f} (在曲线上)")
@@ -288,7 +297,7 @@ class AblationStudyAnalyzer:
             ax.set_xticks(sorted(df['max_depth'].unique()))
         
     def load_and_visualize_existing_data(self, data_path):
-        """从已有数据文件加载并可视化"""
+        """从已有数据文件加载数据"""
         if data_path.endswith('.json'):
             with open(data_path, 'r', encoding='utf-8') as f:
                 self.ablation_results = json.load(f)
@@ -298,7 +307,8 @@ class AblationStudyAnalyzer:
         else:
             raise ValueError("Data file must be JSON or CSV format")
             
-        return self.create_ablation_visualizations()
+        print(f"✅ Loaded ablation data from {data_path}")
+        return []
         
     def generate_summary_report(self):
         """生成消融实验总结报告"""
