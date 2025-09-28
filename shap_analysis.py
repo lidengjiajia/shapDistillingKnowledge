@@ -270,13 +270,13 @@ class SHAPAnalyzer:
             # 获取真实的原始特征名
             real_feature_names = self._get_real_feature_names(dataset_name, features)
             
-            # 创建统一色调的配色方案 - 与消融实验图保持一致的现代配色
-            if idx == 0:  # German - 现代蓝色
-                base_colors = ['#2E86AB'] * 10  # 使用同一个颜色
-            elif idx == 1:  # Australian - 现代紫色
-                base_colors = ['#A23B72'] * 10  # 使用同一个颜色
-            else:  # UCI - 现代橙色
-                base_colors = ['#F18F01'] * 10  # 使用同一个颜色
+            # 创建统一色调的配色方案 - 使用柔和的颜色
+            if idx == 0:  # German - 柔和蓝色
+                base_colors = ['#7BB3F0'] * 10  # 使用同一个柔和颜色
+            elif idx == 1:  # Australian - 柔和紫色
+                base_colors = ['#DDA0DD'] * 10  # 使用同一个柔和颜色
+            else:  # UCI - 柔和橙色
+                base_colors = ['#FFB366'] * 10  # 使用同一个柔和颜色
             
             # 创建条形图 - 改进视觉效果
             bars = ax.barh(range(len(real_feature_names)), importances, 

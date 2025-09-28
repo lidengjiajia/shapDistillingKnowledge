@@ -56,9 +56,9 @@ class AblationStudyAnalyzer:
             
         df = pd.DataFrame(self.ablation_results)
         
-        # 数据集颜色映射 - 使用统一好看的配色
+        # 数据集颜色映射 - 使用柔和好看的配色（与SHAP图一致）
         datasets = df['dataset'].unique()
-        colors = ['#2E86AB', '#A23B72', '#F18F01']  # 蓝色、紫色、橙色 - 现代配色
+        colors = ['#7BB3F0', '#DDA0DD', '#FFB366']  # 柔和蓝色、柔和紫色、柔和橙色
         dataset_colors = dict(zip(datasets, colors[:len(datasets)]))
         
         saved_plots = []
@@ -131,32 +131,23 @@ class AblationStudyAnalyzer:
             ax.axvline(x=max_k, color=dataset_colors[dataset], 
                       linestyle='--', alpha=0.7, linewidth=1.5)
             
-            # 添加最高点标注，使用动态偏移量避免重叠
-            # 根据数据集和k值位置动态调整标注位置
+            # 添加最高点标注，使用更小的偏移量让标注更靠近最高点
+            # 根据数据集使用小幅偏移，避免重叠但保持靠近
             if dataset == 'uci':
-                if max_k < 15:  # k值较小，标注在右上
-                    offset_x, offset_y = 15, 35
-                else:  # k值较大，标注在左上
-                    offset_x, offset_y = -50, 35
+                offset_x, offset_y = 8, 15  # UCI - 右上小偏移
             elif dataset == 'australian':
-                if max_k < 15:  # k值较小，标注在右下
-                    offset_x, offset_y = 15, -35
-                else:  # k值较大，标注在左下
-                    offset_x, offset_y = -50, -35
+                offset_x, offset_y = 8, -15  # Australian - 右下小偏移
             else:  # german
-                if max_k < 15:  # k值较小，标注在右侧
-                    offset_x, offset_y = 15, 5
-                else:  # k值较大，标注在左侧
-                    offset_x, offset_y = -50, 5
+                offset_x, offset_y = 8, 0   # German - 右侧小偏移
                 
             # 显示k值和准确率（显示4位小数）
             ax.annotate(f'k={max_k}\n{max_acc:.4f}', 
                        xy=(max_k, max_acc), 
                        xytext=(offset_x, offset_y), textcoords='offset points',
-                       fontsize=9, color=dataset_colors[dataset],
-                       fontweight='bold', ha='center',
-                       bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.95, 
-                               edgecolor=dataset_colors[dataset], linewidth=1.5))
+                       fontsize=10, color=dataset_colors[dataset],
+                       fontweight='bold', ha='left',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.95, 
+                               edgecolor=dataset_colors[dataset], linewidth=1.2))
                                
             print(f"📊 {dataset.upper()} - 整体最优: k={max_k}, accuracy={max_acc:.4f} (在曲线上)")
                        

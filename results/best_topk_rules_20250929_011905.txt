@@ -1,0 +1,110 @@
+================================================================================
+最优Top-k特征知识蒸馏决策树规则
+Best Top-k Feature Knowledge Distillation Decision Tree Rules
+================================================================================
+
+数据集: UCI
+最佳配置: k=17, T=1, α=0.0, depth=4
+性能: Accuracy=0.8173, F1=0.7901
+选择特征: PAY_6, BILL_AMT1, BILL_AMT3, BILL_AMT2, LIMIT_BAL, SEX, BILL_AMT6, PAY_AMT1, PAY_AMT6, PAY_AMT2, PAY_AMT3, PAY_AMT4, PAY_AMT5, PAY_4, PAY_5, AGE, PAY_0
+决策规则:
+IF PAY_0 <= 1.353 and PAY_5 <= 1.119 and PAY_AMT6 <= -0.239 and PAY_4 <= 1.043 THEN class=0 (confidence=0.804)
+IF PAY_0 <= 1.353 and PAY_5 <= 1.119 and PAY_AMT6 <= -0.239 and PAY_4 > 1.043 THEN class=0 (confidence=0.613)
+IF PAY_0 <= 1.353 and PAY_5 <= 1.119 and PAY_AMT6 > -0.239 and PAY_AMT3 <= -0.136 THEN class=0 (confidence=0.850)
+IF PAY_0 <= 1.353 and PAY_5 <= 1.119 and PAY_AMT6 > -0.239 and PAY_AMT3 > -0.136 THEN class=0 (confidence=0.911)
+IF PAY_0 <= 1.353 and PAY_5 > 1.119 and BILL_AMT1 <= -0.171 and PAY_6 <= 1.120 THEN class=0 (confidence=0.646)
+IF PAY_0 <= 1.353 and PAY_5 > 1.119 and BILL_AMT1 <= -0.171 and PAY_6 > 1.120 THEN class=0 (confidence=0.536)
+IF PAY_0 <= 1.353 and PAY_5 > 1.119 and BILL_AMT1 > -0.171 and AGE <= -1.183 THEN class=0 (confidence=0.933)
+IF PAY_0 <= 1.353 and PAY_5 > 1.119 and BILL_AMT1 > -0.171 and AGE > -1.183 THEN class=0 (confidence=0.644)
+IF PAY_0 > 1.353 and PAY_5 <= -0.207 and PAY_AMT4 <= -0.296 and PAY_AMT2 <= -0.196 THEN class=1 (confidence=0.652)
+IF PAY_0 > 1.353 and PAY_5 <= -0.207 and PAY_AMT4 <= -0.296 and PAY_AMT2 > -0.196 THEN class=1 (confidence=0.909)
+IF PAY_0 > 1.353 and PAY_5 <= -0.207 and PAY_AMT4 > -0.296 and AGE <= 1.424 THEN class=0 (confidence=0.697)
+IF PAY_0 > 1.353 and PAY_5 <= -0.207 and PAY_AMT4 > -0.296 and AGE > 1.424 THEN class=1 (confidence=0.800)
+IF PAY_0 > 1.353 and PAY_5 > -0.207 and PAY_AMT6 <= -0.286 and PAY_AMT5 <= 3.998 THEN class=1 (confidence=0.782)
+IF PAY_0 > 1.353 and PAY_5 > -0.207 and PAY_AMT6 <= -0.286 and PAY_AMT5 > 3.998 THEN class=0 (confidence=1.000)
+IF PAY_0 > 1.353 and PAY_5 > -0.207 and PAY_AMT6 > -0.286 and AGE <= 2.727 THEN class=1 (confidence=0.705)
+IF PAY_0 > 1.353 and PAY_5 > -0.207 and PAY_AMT6 > -0.286 and AGE > 2.727 THEN class=0 (confidence=0.733)
+--------------------------------------------------------------------------------
+
+数据集: GERMAN
+最佳配置: k=20, T=1, α=0.1, depth=7
+性能: Accuracy=0.7600, F1=0.7532
+选择特征: Purpose_A410, Purpose_A41, Age, Status_A12, Credit_amount, Duration, Status_A13, Status_A14, Savings_A63, Savings_A64, Employment_A75, Installment_rate_2, Job_A172, Job_A173, Purpose_A46, Purpose_A48, Credit_history_A31, Credit_history_A32, Credit_history_A33, Credit_history_A34
+决策规则:
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 <= 0.226 and Savings_A64 <= 2.065 and Duration <= -0.335 and Credit_amount <= -0.759 THEN class=0 (confidence=0.549)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 <= 0.226 and Savings_A64 <= 2.065 and Duration <= -0.335 and Credit_amount > -0.759 THEN class=1 (confidence=0.780)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 <= 0.226 and Savings_A64 <= 2.065 and Duration > -0.335 and Credit_amount <= -0.612 THEN class=0 (confidence=0.900)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 <= 0.226 and Savings_A64 <= 2.065 and Duration > -0.335 and Credit_amount > -0.612 THEN class=0 (confidence=0.508)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 <= 0.226 and Savings_A64 > 2.065 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 > 0.226 and Age <= -1.143 and Credit_amount <= -0.800 THEN class=0 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 > 0.226 and Age <= -1.143 and Credit_amount > -0.800 and Employment_A75 <= 0.598 THEN class=1 (confidence=0.500)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 > 0.226 and Age <= -1.143 and Credit_amount > -0.800 and Employment_A75 > 0.598 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 > 0.226 and Age > -1.143 and Credit_history_A33 <= 1.614 and Purpose_A46 <= 1.952 THEN class=1 (confidence=0.906)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 > 0.226 and Age > -1.143 and Credit_history_A33 <= 1.614 and Purpose_A46 > 1.952 THEN class=1 (confidence=0.667)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 > 0.226 and Age > -1.143 and Credit_history_A33 > 1.614 and Job_A172 <= 0.797 THEN class=1 (confidence=0.556)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 <= 0.577 and Status_A14 > 0.226 and Age > -1.143 and Credit_history_A33 > 1.614 and Job_A172 > 0.797 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration <= -0.090 and Credit_history_A31 <= 2.294 and Credit_history_A34 <= 0.419 and Purpose_A48 <= 6.062 THEN class=1 (confidence=0.660)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration <= -0.090 and Credit_history_A31 <= 2.294 and Credit_history_A34 <= 0.419 and Purpose_A48 > 6.062 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration <= -0.090 and Credit_history_A31 <= 2.294 and Credit_history_A34 > 0.419 and Purpose_A48 <= 6.062 THEN class=1 (confidence=0.857)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration <= -0.090 and Credit_history_A31 <= 2.294 and Credit_history_A34 > 0.419 and Purpose_A48 > 6.062 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration <= -0.090 and Credit_history_A31 > 2.294 and Age <= -0.688 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration <= -0.090 and Credit_history_A31 > 2.294 and Age > -0.688 THEN class=0 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration > -0.090 and Credit_amount <= 0.717 and Age <= 1.266 and Savings_A64 <= 2.065 THEN class=1 (confidence=0.551)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration > -0.090 and Credit_amount <= 0.717 and Age <= 1.266 and Savings_A64 > 2.065 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration > -0.090 and Credit_amount <= 0.717 and Age > 1.266 THEN class=0 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration > -0.090 and Credit_amount > 0.717 and Credit_history_A33 <= 1.614 and Purpose_A46 <= 1.952 THEN class=0 (confidence=0.886)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration > -0.090 and Credit_amount > 0.717 and Credit_history_A33 <= 1.614 and Purpose_A46 > 1.952 THEN class=0 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 <= 1.917 and Status_A12 > 0.577 and Duration > -0.090 and Credit_amount > 0.717 and Credit_history_A33 > 1.614 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age <= -0.506 and Credit_amount <= 0.224 and Employment_A75 <= 0.598 and Installment_rate_2 <= 0.647 and Duration <= -0.213 THEN class=1 (confidence=0.500)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age <= -0.506 and Credit_amount <= 0.224 and Employment_A75 <= 0.598 and Installment_rate_2 <= 0.647 and Duration > -0.213 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age <= -0.506 and Credit_amount <= 0.224 and Employment_A75 <= 0.598 and Installment_rate_2 > 0.647 and Age <= -0.961 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age <= -0.506 and Credit_amount <= 0.224 and Employment_A75 <= 0.598 and Installment_rate_2 > 0.647 and Age > -0.961 THEN class=0 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age <= -0.506 and Credit_amount <= 0.224 and Employment_A75 > 0.598 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age <= -0.506 and Credit_amount > 0.224 THEN class=0 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age > -0.506 and Job_A173 <= -0.299 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age > -0.506 and Job_A173 > -0.299 and Age <= 0.903 and Duration <= -0.131 THEN class=1 (confidence=1.000)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age > -0.506 and Job_A173 > -0.299 and Age <= 0.903 and Duration > -0.131 and Duration <= 1.990 THEN class=1 (confidence=0.750)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age > -0.506 and Job_A173 > -0.299 and Age <= 0.903 and Duration > -0.131 and Duration > 1.990 THEN class=0 (confidence=0.503)
+IF Purpose_A41 <= 1.365 and Savings_A63 > 1.917 and Age > -0.506 and Job_A173 > -0.299 and Age > 0.903 THEN class=1 (confidence=1.000)
+IF Purpose_A41 > 1.365 and Status_A14 <= 0.226 and Duration <= 2.112 and Credit_amount <= 1.360 THEN class=1 (confidence=1.000)
+IF Purpose_A41 > 1.365 and Status_A14 <= 0.226 and Duration <= 2.112 and Credit_amount > 1.360 and Duration <= 0.358 THEN class=0 (confidence=1.000)
+IF Purpose_A41 > 1.365 and Status_A14 <= 0.226 and Duration <= 2.112 and Credit_amount > 1.360 and Duration > 0.358 and Employment_A75 <= 0.598 and Credit_amount <= 1.955 THEN class=1 (confidence=1.000)
+IF Purpose_A41 > 1.365 and Status_A14 <= 0.226 and Duration <= 2.112 and Credit_amount > 1.360 and Duration > 0.358 and Employment_A75 <= 0.598 and Credit_amount > 1.955 THEN class=0 (confidence=1.000)
+IF Purpose_A41 > 1.365 and Status_A14 <= 0.226 and Duration <= 2.112 and Credit_amount > 1.360 and Duration > 0.358 and Employment_A75 > 0.598 THEN class=1 (confidence=1.000)
+IF Purpose_A41 > 1.365 and Status_A14 <= 0.226 and Duration > 2.112 THEN class=0 (confidence=1.000)
+IF Purpose_A41 > 1.365 and Status_A14 > 0.226 THEN class=1 (confidence=1.000)
+--------------------------------------------------------------------------------
+
+数据集: AUSTRALIAN
+最佳配置: k=20, T=3, α=0.1, depth=5
+性能: Accuracy=0.8623, F1=0.8624
+选择特征: feature_5_5, feature_5_4, feature_9, feature_12, feature_5_2, feature_5_3, feature_4, feature_6, feature_2, feature_1, feature_0_1, feature_13, feature_5_7, feature_5_8, feature_3_2, feature_3_3, feature_5_9, feature_7_1, feature_8_1, feature_10_1
+决策规则:
+IF feature_7_1 <= -0.024 and feature_2 <= -0.958 and feature_13 <= -0.235 and feature_3_2 <= -0.627 THEN class=0 (confidence=1.000)
+IF feature_7_1 <= -0.024 and feature_2 <= -0.958 and feature_13 <= -0.235 and feature_3_2 > -0.627 and feature_4 <= -0.370 THEN class=0 (confidence=1.000)
+IF feature_7_1 <= -0.024 and feature_2 <= -0.958 and feature_13 <= -0.235 and feature_3_2 > -0.627 and feature_4 > -0.370 THEN class=1 (confidence=0.801)
+IF feature_7_1 <= -0.024 and feature_2 <= -0.958 and feature_13 > -0.235 and feature_1 <= -1.061 THEN class=0 (confidence=1.000)
+IF feature_7_1 <= -0.024 and feature_2 <= -0.958 and feature_13 > -0.235 and feature_1 > -1.061 THEN class=1 (confidence=1.000)
+IF feature_7_1 <= -0.024 and feature_2 > -0.958 and feature_6 <= 0.997 and feature_6 <= 0.334 and feature_10_1 <= 0.063 THEN class=0 (confidence=0.963)
+IF feature_7_1 <= -0.024 and feature_2 > -0.958 and feature_6 <= 0.997 and feature_6 <= 0.334 and feature_10_1 > 0.063 THEN class=0 (confidence=0.986)
+IF feature_7_1 <= -0.024 and feature_2 > -0.958 and feature_6 <= 0.997 and feature_6 > 0.334 and feature_10_1 <= 0.063 THEN class=0 (confidence=0.804)
+IF feature_7_1 <= -0.024 and feature_2 > -0.958 and feature_6 <= 0.997 and feature_6 > 0.334 and feature_10_1 > 0.063 THEN class=0 (confidence=1.000)
+IF feature_7_1 <= -0.024 and feature_2 > -0.958 and feature_6 > 0.997 and feature_12 <= 0.587 THEN class=0 (confidence=1.000)
+IF feature_7_1 <= -0.024 and feature_2 > -0.958 and feature_6 > 0.997 and feature_12 > 0.587 and feature_5_4 <= -0.107 THEN class=1 (confidence=1.000)
+IF feature_7_1 <= -0.024 and feature_2 > -0.958 and feature_6 > 0.997 and feature_12 > 0.587 and feature_5_4 > -0.107 THEN class=0 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 <= -0.513 and feature_4 <= -1.305 and feature_1 <= 1.773 and feature_3_2 <= -0.627 THEN class=0 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 <= -0.513 and feature_4 <= -1.305 and feature_1 <= 1.773 and feature_3_2 > -0.627 THEN class=0 (confidence=0.505)
+IF feature_7_1 > -0.024 and feature_12 <= -0.513 and feature_4 <= -1.305 and feature_1 > 1.773 THEN class=1 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 <= -0.513 and feature_4 > -1.305 and feature_13 <= -0.216 and feature_10_1 <= 0.063 THEN class=1 (confidence=0.936)
+IF feature_7_1 > -0.024 and feature_12 <= -0.513 and feature_4 > -1.305 and feature_13 <= -0.216 and feature_10_1 > 0.063 THEN class=1 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 <= -0.513 and feature_4 > -1.305 and feature_13 > -0.216 THEN class=1 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 <= -0.201 and feature_8_1 <= 0.127 and feature_6 <= 1.335 THEN class=0 (confidence=0.549)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 <= -0.201 and feature_8_1 <= 0.127 and feature_6 > 1.335 THEN class=0 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 <= -0.201 and feature_8_1 > 0.127 and feature_1 <= 1.841 THEN class=1 (confidence=0.796)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 <= -0.201 and feature_8_1 > 0.127 and feature_1 > 1.841 THEN class=0 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 > -0.201 and feature_3_2 <= -0.627 and feature_4 <= 0.031 THEN class=1 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 > -0.201 and feature_3_2 <= -0.627 and feature_4 > 0.031 THEN class=1 (confidence=0.811)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 > -0.201 and feature_3_2 > -0.627 and feature_10_1 <= 0.063 THEN class=1 (confidence=1.000)
+IF feature_7_1 > -0.024 and feature_12 > -0.513 and feature_13 > -0.201 and feature_3_2 > -0.627 and feature_10_1 > 0.063 THEN class=1 (confidence=0.920)
+--------------------------------------------------------------------------------
+
