@@ -46,78 +46,114 @@ class AblationStudyAnalyzer:
         }
         self.ablation_results.append(result)
         
-    def save_ablation_data(self):
-        """保存消融实验数据"""
-        if not self.ablation_results:
-            print("❌ No ablation results to save")
-            return None
-            
-        # 保存为JSON
-        json_path = f'results/ablation_study_{self.experiment_timestamp}.json'
-        with open(json_path, 'w', encoding='utf-8') as f:
-            json.dump(self.ablation_results, f, indent=2)
-            
-        # 保存为CSV
-        df = pd.DataFrame(self.ablation_results)
-        csv_path = f'results/ablation_study_{self.experiment_timestamp}.csv'
-        df.to_csv(csv_path, index=False)
-        
-        print(f"✅ Ablation study data saved:")
-        print(f"   📊 JSON: {json_path}")
-        print(f"   📊 CSV: {csv_path}")
-        
-        return csv_path
+
         
     def create_ablation_visualizations(self):
-        """创建1x2消融实验可视化图 - Top-k特征数量和决策树深度"""
+        """创建分离的消融实验可视化图 - Top-k特征数量和决策树深度分别保存"""
         if not self.ablation_results:
             print("❌ No ablation results to visualize")
             return None
             
         df = pd.DataFrame(self.ablation_results)
         
-        # 创建1x2子图
-        fig, axes = plt.subplots(1, 2, figsize=(16, 7))
-        
         # 数据集颜色映射 - 使用简单的颜色区分
         datasets = df['dataset'].unique()
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # 蓝色、橙色、绿色
         dataset_colors = dict(zip(datasets, colors[:len(datasets)]))
         
+        saved_plots = []
+        
         # 1. Top-k特征数量分析 (如果数据中有k列)
         if 'k' in df.columns:
-            self._plot_topk_ablation(df, axes[0], dataset_colors)
+            fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
+            self._plot_topk_ablation(df, ax1, dataset_colors)
+            plt.tight_layout()
+            plot_path1 = f'results/ablation_study_topk_{self.experiment_timestamp}.png'
+            plt.savefig(plot_path1, dpi=300, bbox_inches='tight', facecolor='white')
+            plt.close()
+            saved_plots.append(plot_path1)
+            print(f"✅ Top-k ablation plot saved: {plot_path1}")
         else:
             # 如果没有k列，则绘制α参数
-            self._plot_alpha_ablation(df, axes[0], dataset_colors)
+            fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
+            self._plot_alpha_ablation(df, ax1, dataset_colors)
+            plt.tight_layout()
+            plot_path1 = f'results/ablation_study_alpha_{self.experiment_timestamp}.png'
+            plt.savefig(plot_path1, dpi=300, bbox_inches='tight', facecolor='white')
+            plt.close()
+            saved_plots.append(plot_path1)
+            print(f"✅ Alpha ablation plot saved: {plot_path1}")
         
-        # 2. 决策树深度分析
-        self._plot_depth_ablation(df, axes[1], dataset_colors)
+        # 2. 决策树深度分析 (如果数据中有max_depth列)
+        if 'max_depth' in df.columns:
+            fig2, ax2 = plt.subplots(1, 1, figsize=(10, 7))
+            self._plot_depth_ablation(df, ax2, dataset_colors)
+            plt.tight_layout()
+            plot_path2 = f'results/ablation_study_depth_{self.experiment_timestamp}.png'
+            plt.savefig(plot_path2, dpi=300, bbox_inches='tight', facecolor='white')
+            plt.close()
+            saved_plots.append(plot_path2)
+            print(f"✅ Depth ablation plot saved: {plot_path2}")
         
-        plt.tight_layout()
-        
-        # 保存图像
-        plot_path = f'results/ablation_study_analysis_{self.experiment_timestamp}.png'
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        plt.close()
-        
-        print(f"✅ Ablation study visualization saved: {plot_path}")
-        return plot_path
+        print(f"✅ All ablation visualizations completed")
+        return saved_plots
         
     def _plot_topk_ablation(self, df, ax, dataset_colors):
-        """绘制Top-k特征数量的消融分析"""
+        """绘制Top-k特征数量的消融分析 - 曲线上每个点都是该k值的最高准确率"""
+        max_points = []  # 存储每个数据集的整体最高点
+        
         for dataset in df['dataset'].unique():
             dataset_data = df[df['dataset'] == dataset]
-            # 按k值分组，计算平均准确率
-            k_grouped = dataset_data.groupby('k')['accuracy'].mean().reset_index()
             
-            ax.plot(k_grouped['k'], k_grouped['accuracy'], 
+            # 按k值分组，取每个k值的最高准确率（而不是平均值）
+            k_max_grouped = dataset_data.groupby('k')['accuracy'].max().reset_index()
+            
+            # 检查是否有数据
+            if k_max_grouped.empty:
+                print(f"⚠️  Warning: No k data found for dataset {dataset}")
+                continue
+            
+            # 绘制曲线（使用每个k值的最高准确率）
+            ax.plot(k_max_grouped['k'], k_max_grouped['accuracy'], 
                    label=dataset.upper(), marker='o', linewidth=2, markersize=6,
                    color=dataset_colors[dataset])
+            
+            # 找到整体最高点（在k_max_grouped中找最高的）
+            max_idx = k_max_grouped['accuracy'].idxmax()
+            max_k = k_max_grouped.loc[max_idx, 'k']
+            max_acc = k_max_grouped.loc[max_idx, 'accuracy']
+            max_points.append((max_k, max_acc, dataset))
+            
+            # 标记整体最高点（现在一定在曲线上）
+            ax.scatter(max_k, max_acc, color=dataset_colors[dataset], 
+                      s=120, marker='*', edgecolors='black', linewidth=1.5, zorder=5)
+            
+            # 添加垂直虚线从x轴到最高点
+            ax.axvline(x=max_k, color=dataset_colors[dataset], 
+                      linestyle='--', alpha=0.7, linewidth=1.5)
+            
+            # 添加最高点标注，使用更分散的偏移量避免重叠
+            if dataset == 'uci':
+                offset_x, offset_y = 10, 25  # UCI位置
+            elif dataset == 'australian':
+                offset_x, offset_y = 10, -25  # Australian位置
+            else:  # german
+                offset_x, offset_y = 10, 0   # German位置（居中）
+                
+            # 显示k值和准确率（显示4位小数）
+            ax.annotate(f'k={max_k}\n{max_acc:.4f}', 
+                       xy=(max_k, max_acc), 
+                       xytext=(offset_x, offset_y), textcoords='offset points',
+                       fontsize=10, color=dataset_colors[dataset],
+                       fontweight='bold', ha='left',
+                       bbox=dict(boxstyle='round,pad=0.4', facecolor='white', alpha=0.95, 
+                               edgecolor=dataset_colors[dataset], linewidth=1.5))
+                               
+            print(f"📊 {dataset.upper()} - 整体最优: k={max_k}, accuracy={max_acc:.4f} (在曲线上)")
                        
         ax.set_xlabel('Number of Top-k Features', fontsize=12)
         ax.set_ylabel('Accuracy', fontsize=12)
-        ax.set_ylim(0, 1.0)  # 设置y轴范围到1.0
+        ax.set_ylim(0.6, 1.0)  # 设置y轴范围从0.6到1.0
         ax.grid(True, alpha=0.3)
         ax.legend(loc='upper right')  # 图例放右上角
         
@@ -148,40 +184,108 @@ class AblationStudyAnalyzer:
         ax.set_xticks(sorted(df['temperature'].unique()))
         
     def _plot_alpha_ablation(self, df, ax, dataset_colors):
-        """绘制加权参数α的消融分析"""
+        """绘制加权参数α的消融分析 - 标记最高点版本"""
+        max_points = []  # 存储每个数据集的最高点
+        
         for dataset in df['dataset'].unique():
             dataset_data = df[df['dataset'] == dataset]
             # 按α值分组，计算平均准确率
             alpha_grouped = dataset_data.groupby('alpha')['accuracy'].mean().reset_index()
             
+            # 检查是否有数据
+            if alpha_grouped.empty:
+                print(f"⚠️  Warning: No alpha data found for dataset {dataset}")
+                continue
+            
+            # 绘制曲线
             ax.plot(alpha_grouped['alpha'], alpha_grouped['accuracy'],
                    label=dataset.upper(), marker='^', linewidth=2, markersize=6,
                    color=dataset_colors[dataset])
+            
+            # 找到最高点
+            max_idx = alpha_grouped['accuracy'].idxmax()
+            max_alpha = alpha_grouped.loc[max_idx, 'alpha']
+            max_acc = alpha_grouped.loc[max_idx, 'accuracy']
+            max_points.append((max_alpha, max_acc, dataset))
+            
+            # 标记最高点
+            ax.scatter(max_alpha, max_acc, color=dataset_colors[dataset], 
+                      s=100, marker='*', edgecolors='black', linewidth=1, zorder=5)
+            
+            # 添加最高点标注，使用不同的偏移量和背景框避免重叠
+            if dataset == 'uci':
+                offset_x, offset_y = 5, 15  # UCI稍微高一点
+            elif dataset == 'australian':
+                offset_x, offset_y = 5, -15  # Australian稍微低一点
+            else:  # german
+                offset_x, offset_y = 5, 10  # German居中
+                
+            ax.annotate(f'{max_acc:.3f}', 
+                       xy=(max_alpha, max_acc), 
+                       xytext=(offset_x, offset_y), textcoords='offset points',
+                       fontsize=9, color=dataset_colors[dataset],
+                       fontweight='bold', ha='left',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor=dataset_colors[dataset]))
                        
         ax.set_xlabel('Weight Parameter (α)', fontsize=12, fontfamily='sans-serif')
         ax.set_ylabel('Accuracy', fontsize=12, fontfamily='sans-serif')
-        ax.set_ylim(0, 1.0)  # 设置y轴范围到1.0
+        ax.set_ylim(0.6, 1.0)  # 设置y轴范围从0.6到1.0
         ax.grid(True, alpha=0.3)
         ax.legend(loc='upper right', fontsize=10)  # 图例放右上角
-        ax.set_xticks(sorted(df['alpha'].unique()))
+        if 'alpha' in df.columns:
+            ax.set_xticks(sorted(df['alpha'].unique()))
         
     def _plot_depth_ablation(self, df, ax, dataset_colors):
-        """绘制决策树深度的消融分析"""
+        """绘制决策树深度的消融分析 - 标记最高点版本"""
+        max_points = []  # 存储每个数据集的最高点
+        
         for dataset in df['dataset'].unique():
             dataset_data = df[df['dataset'] == dataset]
             # 按深度分组，计算平均准确率
             depth_grouped = dataset_data.groupby('max_depth')['accuracy'].mean().reset_index()
             
+            # 检查是否有数据
+            if depth_grouped.empty:
+                print(f"⚠️  Warning: No depth data found for dataset {dataset}")
+                continue
+            
+            # 绘制曲线
             ax.plot(depth_grouped['max_depth'], depth_grouped['accuracy'],
                    label=dataset.upper(), marker='d', linewidth=2, markersize=6,
                    color=dataset_colors[dataset])
+            
+            # 找到最高点
+            max_idx = depth_grouped['accuracy'].idxmax()
+            max_depth = depth_grouped.loc[max_idx, 'max_depth']
+            max_acc = depth_grouped.loc[max_idx, 'accuracy']
+            max_points.append((max_depth, max_acc, dataset))
+            
+            # 标记最高点
+            ax.scatter(max_depth, max_acc, color=dataset_colors[dataset], 
+                      s=100, marker='*', edgecolors='black', linewidth=1, zorder=5)
+            
+            # 添加最高点标注，使用不同的偏移量和背景框避免重叠
+            if dataset == 'uci':
+                offset_x, offset_y = 5, 15  # UCI稍微高一点
+            elif dataset == 'australian':
+                offset_x, offset_y = 5, -15  # Australian稍微低一点
+            else:  # german
+                offset_x, offset_y = 5, 10  # German居中
+                
+            ax.annotate(f'{max_acc:.3f}', 
+                       xy=(max_depth, max_acc), 
+                       xytext=(offset_x, offset_y), textcoords='offset points',
+                       fontsize=9, color=dataset_colors[dataset],
+                       fontweight='bold', ha='left',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor=dataset_colors[dataset]))
                        
         ax.set_xlabel('Decision Tree Max Depth', fontsize=12, fontfamily='sans-serif')
         ax.set_ylabel('Accuracy', fontsize=12, fontfamily='sans-serif')
-        ax.set_ylim(0, 1.0)  # 设置y轴范围到1.0
+        ax.set_ylim(0.6, 1.0)  # 设置y轴范围从0.6到1.0
         ax.grid(True, alpha=0.3)
         ax.legend(loc='upper right', fontsize=10)  # 图例放右上角
-        ax.set_xticks(sorted(df['max_depth'].unique()))
+        if 'max_depth' in df.columns:
+            ax.set_xticks(sorted(df['max_depth'].unique()))
         
     def load_and_visualize_existing_data(self, data_path):
         """从已有数据文件加载并可视化"""
@@ -249,58 +353,9 @@ class AblationStudyAnalyzer:
         
         return report_path
 
-    def create_topk_ablation_visualizations(self):
-        """创建1x2 Top-k消融实验可视化图 - 关注Top-k特征数量和决策树深度"""
-        if not self.ablation_results:
-            print("❌ No Top-k ablation results to visualize")
-            return None
-            
-        df = pd.DataFrame(self.ablation_results)
-        
-        # 创建1x2子图
-        fig, axes = plt.subplots(1, 2, figsize=(16, 7))
-        
-        # 数据集颜色映射
-        datasets = df['dataset'].unique()
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # 蓝色、橙色、绿色
-        dataset_colors = dict(zip(datasets, colors[:len(datasets)]))
-        
-        # 1. Top-k特征数量分析
-        self._plot_topk_k_ablation(df, axes[0], dataset_colors)
-        
-        # 2. 决策树深度分析
-        self._plot_depth_ablation(df, axes[1], dataset_colors)
-        
-        plt.tight_layout()
-        
-        # 保存图像
-        plot_path = f'results/topk_ablation_study_analysis_{self.experiment_timestamp}.png'
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        plt.close()
-        
-        print(f"✅ Top-k ablation study visualization saved: {plot_path}")
-        return plot_path
 
-    def _plot_topk_k_ablation(self, df, ax, dataset_colors):
-        """绘制Top-k特征数量消融分析 - 无标题版本"""
-        for dataset in df['dataset'].unique():
-            dataset_df = df[df['dataset'] == dataset]
-            k_accuracy = dataset_df.groupby('k')['accuracy'].mean().reset_index()
-            
-            ax.plot(k_accuracy['k'], k_accuracy['accuracy'], 
-                   marker='o', linewidth=2, markersize=6, 
-                   color=dataset_colors[dataset], label=dataset.upper())
-        
-        ax.set_xlabel('Top-k Features', fontsize=12)
-        ax.set_ylabel('Accuracy', fontsize=12)
-        ax.set_ylim(0, 1.0)  # 设置y轴范围到1.0
-        ax.legend(loc='upper right')  # 图例放右上角
-        ax.grid(True, alpha=0.3)
-        
-        # 设置x轴间隔为5
-        k_values = sorted([k for k in df['k'].unique() if k is not None])
-        if k_values:
-            ax.set_xticks([k for k in k_values if k % 5 == 0])  # x轴间隔为5
+
+
 
     def _plot_temperature_ablation(self, df, ax, dataset_colors):
         """绘制温度参数消融分析 - 无标题版本"""

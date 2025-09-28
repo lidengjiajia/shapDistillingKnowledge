@@ -191,8 +191,7 @@ def main():
             teacher_models, baseline_results, all_feature_distillation_results, top_k_distillation_results
         )
         
-        # 2. 生成SHAP特征重要性排序图
-        shap_viz_path = result_manager.generate_shap_visualization(all_shap_results)
+        # 2. SHAP特征重要性可视化已在Phase 3中完成，无需重复生成
         
         # 3. 提取最优全特征蒸馏规则
         all_feature_rules_path = result_manager.extract_best_all_feature_rules(all_feature_distillation_results, processed_data)

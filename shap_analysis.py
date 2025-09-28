@@ -246,43 +246,46 @@ class SHAPAnalyzer:
         }
     
     def create_combined_shap_visualization(self, all_shap_results):
-        """Create combined SHAP visualization for three datasets with top 20 features"""
-        print(f"📊 Creating combined SHAP visualization with top 20 features...")
-        
-        fig, axes = plt.subplots(1, 3, figsize=(28, 16))
+        """Create separate SHAP visualizations for three datasets with top 10 features"""
+        print(f"📊 Creating separate SHAP visualizations with top 10 features...")
         
         # 按要求的顺序：German, Australian, UCI
         datasets = ['german', 'australian', 'uci']
         titles = ['German Credit Dataset', 'Australian Credit Dataset', 'UCI Credit Dataset']
+        filenames = ['shap_german_features.png', 'shap_australian_features.png', 'shap_uci_features.png']
         
-        for idx, (dataset_name, title) in enumerate(zip(datasets, titles)):
-            ax = axes[idx]
+        saved_files = []
+        
+        for idx, (dataset_name, title, filename) in enumerate(zip(datasets, titles, filenames)):
+            # 创建单独的图形
+            fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+            
             shap_results = all_shap_results[dataset_name]
             
-            # 获取Top 20特征 - 使用真实特征名
-            top_features = shap_results['sorted_features'][:20]
+            # 获取Top 10特征 - 使用真实特征名
+            top_features = shap_results['sorted_features'][:10]
             features, importances = zip(*top_features)
             importances = [float(x) for x in importances]
             
             # 获取真实的原始特征名
             real_feature_names = self._get_real_feature_names(dataset_name, features)
             
-            # 创建更浅的配色方案 - 使用浅色调
-            if idx == 0:  # German - 浅蓝色系
-                colors_gradient = plt.cm.Blues(np.linspace(0.3, 0.7, 20))
-            elif idx == 1:  # Australian - 浅绿色系  
-                colors_gradient = plt.cm.Greens(np.linspace(0.3, 0.7, 20))
-            else:  # UCI - 浅橙色系
-                colors_gradient = plt.cm.Oranges(np.linspace(0.3, 0.7, 20))
+            # 创建统一色调的配色方案 - 每个数据集使用相同的颜色
+            if idx == 0:  # German - 统一柔和薄荷绿
+                base_colors = ['#7FDDBB'] * 10  # 使用同一个颜色
+            elif idx == 1:  # Australian - 统一温柔粉桃色
+                base_colors = ['#FF9CAD'] * 10  # 使用同一个颜色
+            else:  # UCI - 统一清雅紫色
+                base_colors = ['#CDA5FF'] * 10  # 使用同一个颜色
             
             # 创建条形图 - 改进视觉效果
             bars = ax.barh(range(len(real_feature_names)), importances, 
-                          color=colors_gradient, alpha=0.85, edgecolor='white', linewidth=1.0)
+                          color=base_colors, alpha=0.9, edgecolor='white', linewidth=1.5)
             
             ax.set_yticks(range(len(real_feature_names)))
-            ax.set_yticklabels(real_feature_names, fontsize=12, fontweight='normal')
-            ax.set_xlabel('Mean |SHAP Value|', fontsize=14, fontweight='bold')
-            ax.set_title(title, fontsize=16, fontweight='bold', pad=30)
+            ax.set_yticklabels(real_feature_names, fontsize=13, fontweight='normal')
+            ax.set_xlabel('Mean |SHAP Value|', fontsize=15, fontweight='bold')
+            ax.set_title(title, fontsize=18, fontweight='bold', pad=25)
             ax.invert_yaxis()
             
             # 添加网格线以提高可读性
@@ -294,26 +297,30 @@ class SHAPAnalyzer:
             for i, (bar, imp) in enumerate(zip(bars, importances)):
                 ax.text(bar.get_width() + max_imp*0.01, 
                        bar.get_y() + bar.get_height()/2, 
-                       f'{imp:.4f}', va='center', fontsize=10, 
+                       f'{imp:.4f}', va='center', fontsize=11, 
                        fontweight='bold', color='black')
             
             # 美化坐标轴
             ax.spines['top'].set_visible(False)
             ax.spines['right'].set_visible(False)
-            ax.spines['left'].set_color('#AAAAAA')
-            ax.spines['bottom'].set_color('#AAAAAA')
+            ax.spines['left'].set_color('#CCCCCC')
+            ax.spines['bottom'].set_color('#CCCCCC')
             
             # 设置背景色
-            ax.set_facecolor('#f8f9fa')
+            ax.set_facecolor('#FAFAFA')
+            
+            plt.tight_layout(pad=3.0)
+            filepath = f'results/{filename}'
+            plt.savefig(filepath, dpi=300, bbox_inches='tight', 
+                       facecolor='white', edgecolor='none')
+            plt.close()
+            
+            saved_files.append(filepath)
+            print(f"   ✅ {title} SHAP visualization saved to: {filepath}")
         
-        plt.tight_layout(pad=4.0)
-        plt.savefig('results/shap_feature_importance.png', dpi=300, bbox_inches='tight', 
-                   facecolor='white', edgecolor='none')
-        plt.close()
+        print(f"   ✅ All SHAP feature importance visualizations completed")
         
-        print(f"   ✅ SHAP feature importance visualization (Top 20) saved to: results/shap_feature_importance.png")
-        
-        return 'results/shap_feature_importance.png'
+        return saved_files
     
     def _get_real_feature_names(self, dataset_name, encoded_features):
         """Get real feature names from original datasets"""

@@ -391,9 +391,9 @@ class KnowledgeDistillator:
         
         # 保存消融实验数据和创建可视化
         print("\n📊 Saving ablation study data and creating visualizations for all-feature distillation...")
-        ablation_analyzer.save_ablation_data()
+        ablation_analyzer.save_ablation_data(prefix='ablation_study')
         ablation_analyzer.create_ablation_visualizations()
-        ablation_analyzer.generate_summary_report()
+        ablation_analyzer.generate_summary_report(prefix='ablation_study')
         
         return results
     
@@ -542,7 +542,8 @@ class KnowledgeDistillator:
         # 保存Top-k消融实验数据和创建可视化
         print("\n📊 Saving Top-k ablation study data and creating visualizations...")
         topk_ablation_analyzer.save_ablation_data(prefix='topk_ablation_study')
-        topk_ablation_analyzer.create_topk_ablation_visualizations()
+        # 使用通用的消融实验可视化方法（避免重复生成）
+        topk_ablation_analyzer.create_ablation_visualizations()
         topk_ablation_analyzer.generate_summary_report(prefix='topk_ablation_study')
         
         return results
