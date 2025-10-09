@@ -1,0 +1,150 @@
+================================================================================
+最优全特征知识蒸馏决策树规则
+Best All-Feature Knowledge Distillation Decision Tree Rules
+================================================================================
+生成时间: 2025-10-09 21:11:11
+
+📊 UCI Dataset:
+   性能指标:
+     • Accuracy: 0.8115
+     • F1-Score: 0.7785
+     • Precision: 0.7931
+     • Recall: 0.8115
+   最优参数:
+     • Alpha (α): 0.1
+     • Temperature (T): 1
+     • Max Depth: 5
+   决策规则:
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 <= 1.120 and PAY_0 <= 1.353 and BILL_AMT4 <= -0.507 THEN class=0 (confidence=0.776)
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 <= 1.120 and PAY_0 <= 1.353 and BILL_AMT4 > -0.507 THEN class=0 (confidence=0.839)
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 <= 1.120 and PAY_0 > 1.353 and BILL_AMT1 <= -0.658 THEN class=0 (confidence=0.631)
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 <= 1.120 and PAY_0 > 1.353 and BILL_AMT1 > -0.658 THEN class=1 (confidence=0.711)
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 > 1.120 and PAY_AMT2 <= -0.044 and BILL_AMT1 <= -0.111 THEN class=0 (confidence=0.581)
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 > 1.120 and PAY_AMT2 <= -0.044 and BILL_AMT1 > -0.111 THEN class=0 (confidence=0.826)
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 > 1.120 and PAY_AMT2 > -0.044 and BILL_AMT1 <= -0.209 THEN class=0 (confidence=1.000)
+IF PAY_2 <= 1.366 and LIMIT_BAL <= -0.790 and PAY_6 > 1.120 and PAY_AMT2 > -0.044 and BILL_AMT1 > -0.209 THEN class=0 (confidence=0.775)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 <= -0.693 and AGE <= 2.075 and PAY_AMT3 <= -0.301 THEN class=0 (confidence=0.707)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 <= -0.693 and AGE <= 2.075 and PAY_AMT3 > -0.301 THEN class=0 (confidence=0.837)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 <= -0.693 and AGE > 2.075 and PAY_AMT1 <= -0.251 THEN class=0 (confidence=0.507)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 <= -0.693 and AGE > 2.075 and PAY_AMT1 > -0.251 THEN class=0 (confidence=0.840)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 > -0.693 and PAY_AMT4 <= -0.311 and PAY_6 <= -0.184 THEN class=0 (confidence=0.867)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 > -0.693 and PAY_AMT4 <= -0.311 and PAY_6 > -0.184 THEN class=0 (confidence=0.773)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 > -0.693 and PAY_AMT4 > -0.311 and PAY_5 <= 1.119 THEN class=0 (confidence=0.897)
+IF PAY_2 <= 1.366 and LIMIT_BAL > -0.790 and BILL_AMT1 > -0.693 and PAY_AMT4 > -0.311 and PAY_5 > 1.119 THEN class=0 (confidence=0.667)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 <= 0.974 and PAY_3 <= -0.279 and BILL_AMT3 <= -0.680 THEN class=1 (confidence=0.692)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 <= 0.974 and PAY_3 <= -0.279 and BILL_AMT3 > -0.680 THEN class=0 (confidence=0.804)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 <= 0.974 and PAY_3 > -0.279 and PAY_AMT3 <= -0.086 THEN class=0 (confidence=0.604)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 <= 0.974 and PAY_3 > -0.279 and PAY_AMT3 > -0.086 THEN class=0 (confidence=0.719)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 > 0.974 and PAY_AMT2 <= -0.126 and PAY_AMT2 <= -0.141 THEN class=0 (confidence=0.526)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 > 0.974 and PAY_AMT2 <= -0.126 and PAY_AMT2 > -0.141 THEN class=1 (confidence=0.823)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 > 0.974 and PAY_AMT2 > -0.126 and BILL_AMT6 <= -0.560 THEN class=0 (confidence=1.000)
+IF PAY_2 > 1.366 and PAY_0 <= 1.353 and PAY_3 > 0.974 and PAY_AMT2 > -0.126 and BILL_AMT6 > -0.560 THEN class=0 (confidence=0.600)
+IF PAY_2 > 1.366 and PAY_0 > 1.353 and BILL_AMT3 <= -0.671 and PAY_AMT3 <= -0.247 and EDUCATION <= 0.886 THEN class=1 (confidence=0.559)
+IF PAY_2 > 1.366 and PAY_0 > 1.353 and BILL_AMT3 <= -0.671 and PAY_AMT3 <= -0.247 and EDUCATION > 0.886 THEN class=1 (confidence=0.903)
+IF PAY_2 > 1.366 and PAY_0 > 1.353 and BILL_AMT3 <= -0.671 and PAY_AMT3 > -0.247 THEN class=0 (confidence=1.000)
+IF PAY_2 > 1.366 and PAY_0 > 1.353 and BILL_AMT3 > -0.671 and PAY_5 <= 1.119 and EDUCATION <= 0.886 THEN class=1 (confidence=0.720)
+IF PAY_2 > 1.366 and PAY_0 > 1.353 and BILL_AMT3 > -0.671 and PAY_5 <= 1.119 and EDUCATION > 0.886 THEN class=1 (confidence=0.572)
+IF PAY_2 > 1.366 and PAY_0 > 1.353 and BILL_AMT3 > -0.671 and PAY_5 > 1.119 and PAY_AMT6 <= -0.078 THEN class=1 (confidence=0.796)
+IF PAY_2 > 1.366 and PAY_0 > 1.353 and BILL_AMT3 > -0.671 and PAY_5 > 1.119 and PAY_AMT6 > -0.078 THEN class=1 (confidence=0.629)
+--------------------------------------------------
+
+📊 GERMAN Dataset:
+   性能指标:
+     • Accuracy: 0.7200
+     • F1-Score: 0.6798
+     • Precision: 0.6920
+     • Recall: 0.7200
+   最优参数:
+     • Alpha (α): 0.0
+     • Temperature (T): 1
+     • Max Depth: 4
+   决策规则:
+IF Duration <= 0.889 and Purpose_A43 <= 0.509 and Purpose_A41 <= 1.365 and Job_A173 <= -0.299 THEN class=1 (confidence=0.621)
+IF Duration <= 0.889 and Purpose_A43 <= 0.509 and Purpose_A41 <= 1.365 and Job_A173 > -0.299 THEN class=1 (confidence=0.712)
+IF Duration <= 0.889 and Purpose_A43 <= 0.509 and Purpose_A41 > 1.365 and Existing_credits_2 <= 0.318 THEN class=1 (confidence=0.929)
+IF Duration <= 0.889 and Purpose_A43 <= 0.509 and Purpose_A41 > 1.365 and Existing_credits_2 > 0.318 THEN class=1 (confidence=1.000)
+IF Duration <= 0.889 and Purpose_A43 > 0.509 and Other_payment_plans_A142 <= 2.065 and Own_telephone_A192 <= 0.208 THEN class=1 (confidence=0.890)
+IF Duration <= 0.889 and Purpose_A43 > 0.509 and Other_payment_plans_A142 <= 2.065 and Own_telephone_A192 > 0.208 THEN class=1 (confidence=0.778)
+IF Duration <= 0.889 and Purpose_A43 > 0.509 and Other_payment_plans_A142 > 2.065 and Installment_rate_4 <= 0.033 THEN class=0 (confidence=1.000)
+IF Duration <= 0.889 and Purpose_A43 > 0.509 and Other_payment_plans_A142 > 2.065 and Installment_rate_4 > 0.033 THEN class=0 (confidence=0.500)
+IF Duration > 0.889 and Employment_A72 <= 0.855 and Job_A173 <= -0.299 and Personal_status_A92 <= 0.378 THEN class=1 (confidence=0.783)
+IF Duration > 0.889 and Employment_A72 <= 0.855 and Job_A173 <= -0.299 and Personal_status_A92 > 0.378 THEN class=0 (confidence=1.000)
+IF Duration > 0.889 and Employment_A72 <= 0.855 and Job_A173 > -0.299 and Status_A14 <= 0.226 THEN class=0 (confidence=0.683)
+IF Duration > 0.889 and Employment_A72 <= 0.855 and Job_A173 > -0.299 and Status_A14 > 0.226 THEN class=1 (confidence=0.733)
+IF Duration > 0.889 and Employment_A72 > 0.855 and Duration <= 1.500 THEN class=0 (confidence=1.000)
+IF Duration > 0.889 and Employment_A72 > 0.855 and Duration > 1.500 and Personal_status_A93 <= -0.067 THEN class=1 (confidence=0.600)
+IF Duration > 0.889 and Employment_A72 > 0.855 and Duration > 1.500 and Personal_status_A93 > -0.067 THEN class=0 (confidence=1.000)
+--------------------------------------------------
+
+📊 AUSTRALIAN Dataset:
+   性能指标:
+     • Accuracy: 0.8261
+     • F1-Score: 0.8265
+     • Precision: 0.8284
+     • Recall: 0.8261
+   最优参数:
+     • Alpha (α): 0.0
+     • Temperature (T): 1
+     • Max Depth: 8
+   决策规则:
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 <= -0.024 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 > -0.024 and feature_2 <= -0.475 and feature_4 <= -1.038 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 > -0.024 and feature_2 <= -0.475 and feature_4 > -1.038 and feature_1 <= 0.132 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 > -0.024 and feature_2 <= -0.475 and feature_4 > -1.038 and feature_1 > 0.132 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 > -0.024 and feature_2 > -0.475 and feature_9 <= -0.373 and feature_6 <= -0.092 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 > -0.024 and feature_2 > -0.475 and feature_9 <= -0.373 and feature_6 > -0.092 and feature_5_8 <= 0.694 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 > -0.024 and feature_2 > -0.475 and feature_9 <= -0.373 and feature_6 > -0.092 and feature_5_8 > 0.694 THEN class=1 (confidence=0.667)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 <= 0.262 and feature_7_1 > -0.024 and feature_2 > -0.475 and feature_9 > -0.373 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 <= 0.063 and feature_13 > 0.262 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 <= -0.373 and feature_11_2 <= -1.342 and feature_2 <= -0.671 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 <= -0.373 and feature_11_2 <= -1.342 and feature_2 > -0.671 and feature_4 <= -1.305 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 <= -0.373 and feature_11_2 <= -1.342 and feature_2 > -0.671 and feature_4 > -1.305 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 <= -0.373 and feature_11_2 > -1.342 and feature_2 <= -0.553 and feature_12 <= 0.885 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 <= -0.373 and feature_11_2 > -1.342 and feature_2 <= -0.553 and feature_12 > 0.885 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 <= -0.373 and feature_11_2 > -1.342 and feature_2 > -0.553 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 > -0.373 and feature_5_8 <= 0.694 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 > -0.373 and feature_5_8 > 0.694 and feature_0_1 <= -0.314 THEN class=1 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 > -0.373 and feature_5_8 > 0.694 and feature_0_1 > -0.314 and feature_13 <= 1.827 THEN class=0 (confidence=1.000)
+IF feature_3_2 <= -0.627 and feature_10_1 > 0.063 and feature_9 > -0.373 and feature_5_8 > 0.694 and feature_0_1 > -0.314 and feature_13 > 1.827 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 <= 0.031 and feature_0_1 <= -0.314 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 <= 0.031 and feature_0_1 > -0.314 and feature_6 <= -0.674 and feature_12 <= -0.757 THEN class=0 (confidence=0.500)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 <= 0.031 and feature_0_1 > -0.314 and feature_6 <= -0.674 and feature_12 > -0.757 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 <= 0.031 and feature_0_1 > -0.314 and feature_6 > -0.674 and feature_5_5 <= 1.320 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 <= 0.031 and feature_0_1 > -0.314 and feature_6 > -0.674 and feature_5_5 > 1.320 THEN class=0 (confidence=0.889)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 > 0.031 and feature_10_1 <= 0.063 and feature_9 <= -0.176 and feature_12 <= 0.663 THEN class=0 (confidence=0.750)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 > 0.031 and feature_10_1 <= 0.063 and feature_9 <= -0.176 and feature_12 > 0.663 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 > 0.031 and feature_10_1 <= 0.063 and feature_9 > -0.176 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 > 0.031 and feature_10_1 > 0.063 and feature_6 <= -0.661 and feature_4 <= 0.566 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 > 0.031 and feature_10_1 > 0.063 and feature_6 <= -0.661 and feature_4 > 0.566 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 <= 2.645 and feature_4 > 0.031 and feature_10_1 > 0.063 and feature_6 > -0.661 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 > 2.645 and feature_6 <= 0.434 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 <= 3.414 and feature_12 > 2.645 and feature_6 > 0.434 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 <= -0.024 and feature_1 > 3.414 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 <= -0.176 and feature_2 <= 0.491 and feature_11_2 <= -1.342 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 <= -0.176 and feature_2 <= 0.491 and feature_11_2 > -1.342 and feature_12 <= -0.801 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 <= -0.176 and feature_2 <= 0.491 and feature_11_2 > -1.342 and feature_12 > -0.801 and feature_1 <= -0.731 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 <= -0.176 and feature_2 <= 0.491 and feature_11_2 > -1.342 and feature_12 > -0.801 and feature_1 > -0.731 THEN class=0 (confidence=0.818)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 <= -0.176 and feature_2 > 0.491 and feature_9 <= -0.373 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 <= -0.176 and feature_2 > 0.491 and feature_9 > -0.373 and feature_13 <= -0.209 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 <= -0.176 and feature_2 > 0.491 and feature_9 > -0.373 and feature_13 > -0.209 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 > -0.176 and feature_2 <= 0.504 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 > -0.176 and feature_2 > 0.504 and feature_13 <= -0.212 and feature_5_8 <= 0.694 and feature_6 <= -0.011 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 > -0.176 and feature_2 > 0.504 and feature_13 <= -0.212 and feature_5_8 <= 0.694 and feature_6 > -0.011 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 > -0.176 and feature_2 > 0.504 and feature_13 <= -0.212 and feature_5_8 > 0.694 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 <= 0.031 and feature_9 > -0.176 and feature_2 > 0.504 and feature_13 > -0.212 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 <= -0.288 and feature_13 <= -0.229 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 <= -0.288 and feature_13 > -0.229 and feature_13 <= -0.216 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 <= -0.288 and feature_13 > -0.229 and feature_13 > -0.216 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 <= -0.039 and feature_6 <= -0.562 and feature_4 <= 0.298 and feature_5_5 <= 1.320 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 <= -0.039 and feature_6 <= -0.562 and feature_4 <= 0.298 and feature_5_5 > 1.320 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 <= -0.039 and feature_6 <= -0.562 and feature_4 > 0.298 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 <= -0.039 and feature_6 > -0.562 and feature_1 <= -0.278 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 <= -0.039 and feature_6 > -0.562 and feature_1 > -0.278 and feature_2 <= -0.758 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 <= -0.039 and feature_6 > -0.562 and feature_1 > -0.278 and feature_2 > -0.758 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 > -0.039 and feature_2 <= 0.543 and feature_5_5 <= 1.320 and feature_4 <= 1.635 THEN class=1 (confidence=0.839)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 > -0.039 and feature_2 <= 0.543 and feature_5_5 <= 1.320 and feature_4 > 1.635 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 > -0.039 and feature_2 <= 0.543 and feature_5_5 > 1.320 and feature_12 <= 0.796 THEN class=0 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 > -0.039 and feature_2 <= 0.543 and feature_5_5 > 1.320 and feature_12 > 0.796 THEN class=1 (confidence=1.000)
+IF feature_3_2 > -0.627 and feature_7_1 > -0.024 and feature_4 > 0.031 and feature_12 > -0.288 and feature_12 > -0.039 and feature_2 > 0.543 THEN class=1 (confidence=1.000)
+--------------------------------------------------
+

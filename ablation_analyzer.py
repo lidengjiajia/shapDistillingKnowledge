@@ -131,14 +131,14 @@ class AblationStudyAnalyzer:
             ax.axvline(x=max_k, color=dataset_colors[dataset], 
                       linestyle='--', alpha=0.7, linewidth=1.5)
             
-            # 添加最高点标注，使用更小的偏移量让标注更靠近最高点
-            # 根据数据集使用小幅偏移，避免重叠但保持靠近
-            if dataset == 'uci':
-                offset_x, offset_y = 8, 15  # UCI - 右上小偏移
-            elif dataset == 'australian':
-                offset_x, offset_y = 8, -15  # Australian - 右下小偏移
-            else:  # german
-                offset_x, offset_y = 8, 0   # German - 右侧小偏移
+            # 添加最高点标注，根据k值智能调整偏移量避免重叠
+            # 使用k值来决定标注位置，避免三个数据集的标注重叠在一起
+            if max_k < 15:  # k值较小
+                offset_x, offset_y = 12, 18  # 右上
+            elif max_k < 30:  # k值中等
+                offset_x, offset_y = 12, 0   # 右侧
+            else:  # k值较大
+                offset_x, offset_y = 12, -18  # 右下
                 
             # 显示k值和准确率（显示4位小数）
             ax.annotate(f'k={max_k}\n{max_acc:.4f}', 
@@ -236,48 +236,51 @@ class AblationStudyAnalyzer:
             ax.set_xticks(sorted(df['alpha'].unique()))
         
     def _plot_depth_ablation(self, df, ax, dataset_colors):
-        """绘制决策树深度的消融分析 - 标记最高点版本"""
-        max_points = []  # 存储每个数据集的最高点
+        """绘制决策树深度的消融分析 - 曲线上每个点都是该depth值的最高准确率"""
+        max_points = []  # 存储每个数据集的整体最高点
         
         for dataset in df['dataset'].unique():
             dataset_data = df[df['dataset'] == dataset]
-            # 按深度分组，计算平均准确率
-            depth_grouped = dataset_data.groupby('max_depth')['accuracy'].mean().reset_index()
+            # 按深度分组，取每个depth值的最高准确率（而不是平均值）
+            depth_max_grouped = dataset_data.groupby('max_depth')['accuracy'].max().reset_index()
             
             # 检查是否有数据
-            if depth_grouped.empty:
+            if depth_max_grouped.empty:
                 print(f"⚠️  Warning: No depth data found for dataset {dataset}")
                 continue
             
-            # 绘制曲线
-            ax.plot(depth_grouped['max_depth'], depth_grouped['accuracy'],
+            # 绘制曲线（使用每个depth值的最高准确率）
+            ax.plot(depth_max_grouped['max_depth'], depth_max_grouped['accuracy'],
                    label=dataset.upper(), marker='d', linewidth=2, markersize=6,
                    color=dataset_colors[dataset])
             
-            # 找到最高点
-            max_idx = depth_grouped['accuracy'].idxmax()
-            max_depth = depth_grouped.loc[max_idx, 'max_depth']
-            max_acc = depth_grouped.loc[max_idx, 'accuracy']
+            # 找到整体最高点（在depth_max_grouped中找最高的）
+            max_idx = depth_max_grouped['accuracy'].idxmax()
+            max_depth = depth_max_grouped.loc[max_idx, 'max_depth']
+            max_acc = depth_max_grouped.loc[max_idx, 'accuracy']
             max_points.append((max_depth, max_acc, dataset))
             
-            # 标记最高点
+            # 标记整体最高点（现在一定在曲线上）
             ax.scatter(max_depth, max_acc, color=dataset_colors[dataset], 
                       s=100, marker='*', edgecolors='black', linewidth=1, zorder=5)
             
-            # 添加最高点标注，使用不同的偏移量和背景框避免重叠
-            if dataset == 'uci':
-                offset_x, offset_y = 5, 15  # UCI稍微高一点
-            elif dataset == 'australian':
-                offset_x, offset_y = 5, -15  # Australian稍微低一点
-            else:  # german
-                offset_x, offset_y = 5, 10  # German居中
+            # 添加最高点标注，根据depth值智能调整偏移量避免重叠
+            # 使用max_depth值来决定标注位置，避免三个数据集的标注重叠在一起
+            if max_depth <= 5:  # depth较小
+                offset_x, offset_y = 8, 18  # 右上
+            elif max_depth <= 6:  # depth中等
+                offset_x, offset_y = 8, 0   # 右侧
+            else:  # depth较大
+                offset_x, offset_y = 8, -18  # 右下
                 
-            ax.annotate(f'{max_acc:.3f}', 
+            ax.annotate(f'depth={int(max_depth)}\n{max_acc:.4f}', 
                        xy=(max_depth, max_acc), 
                        xytext=(offset_x, offset_y), textcoords='offset points',
-                       fontsize=9, color=dataset_colors[dataset],
+                       fontsize=10, color=dataset_colors[dataset],
                        fontweight='bold', ha='left',
-                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor=dataset_colors[dataset]))
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.95, edgecolor=dataset_colors[dataset], linewidth=1.2))
+            
+            print(f"📊 {dataset.upper()} - 整体最优depth: {int(max_depth)}, accuracy={max_acc:.4f} (在曲线上)")
                        
         ax.set_xlabel('Decision Tree Max Depth', fontsize=12, fontfamily='sans-serif')
         ax.set_ylabel('Accuracy', fontsize=12, fontfamily='sans-serif')

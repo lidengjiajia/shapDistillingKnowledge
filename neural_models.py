@@ -19,6 +19,12 @@ warnings.filterwarnings('ignore')
 # 设置随机种子以确保结果可重现
 torch.manual_seed(42)
 np.random.seed(42)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(42)
+    torch.cuda.manual_seed_all(42)  # 如果使用多GPU
+# 确保PyTorch算法确定性
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 # 设备配置
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

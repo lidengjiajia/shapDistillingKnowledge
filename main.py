@@ -2,12 +2,7 @@
 信用评分模型优化系统 - 主程序
 Credit Scoring Model Optimization System - Main Program
 
-基        # ========================
-        # 2. 教师模型训练
-        # ========================
-        print(f"\n🧠 Phase 2: Teacher Model Training")
-        print(f"   Training neural network teacher models...")
-        teacher_models = train_all_teacher_models(processed_data)P特征重要性分析和知识蒸馏的信用评分模型优化系统
+基于SHAP特征重要性分析和知识蒸馏的信用评分模型优化系统
 模块化架构，支持扩展参数组合和改进的用户体验
 """
 
@@ -16,6 +11,25 @@ import warnings
 import torch
 import numpy as np
 from tqdm import tqdm
+import random
+
+# ============================
+# 全局随机种子设置 - 确保实验可重复
+# ============================
+def set_global_seed(seed=42):
+    """设置所有随机数生成器的种子"""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ['PYTHONHASHSEED'] = str(seed)
+
+# 在导入任何模块之前设置随机种子
+set_global_seed(42)
 
 # 解决中文路径编码问题
 import locale

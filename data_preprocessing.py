@@ -17,6 +17,13 @@ warnings.filterwarnings('ignore')
 # 设置随机种子确保可重现性
 torch.manual_seed(42)
 np.random.seed(42)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(42)
+    torch.cuda.manual_seed_all(42)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+import random
+random.seed(42)
 
 # 设备配置
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
