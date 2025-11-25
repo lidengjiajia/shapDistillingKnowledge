@@ -10,14 +10,14 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm
 import warnings
-import multiprocessing as mp
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import partial
 import os
 from datetime import datetime
+import pandas as pd
 
 # 并发配置：使用CPU核心数-1，至少为1
-n_jobs = max(1, min(mp.cpu_count() - 1, mp.cpu_count()))
+n_jobs = max(1, min(os.cpu_count() - 1, os.cpu_count()))
 # 只在需要时显示配置信息，避免重复输出
 
 # 导入消融实验分析器
@@ -256,8 +256,8 @@ class KnowledgeDistillator:
             if tree.feature[node] != _tree.TREE_UNDEFINED:
                 name = feature_names[tree.feature[node]]
                 threshold = tree.threshold[node]
-                left_rule = f"{parent_rule}{name} <= {threshold:.3f}"
-                right_rule = f"{parent_rule}{name} > {threshold:.3f}"
+                left_rule = f"{parent_rule}{name} <= {threshold:.4f}"
+                right_rule = f"{parent_rule}{name} > {threshold:.4f}"
                 recurse(tree.children_left[node], depth + 1, left_rule + " and ")
                 recurse(tree.children_right[node], depth + 1, right_rule + " and ")
             else:
@@ -267,7 +267,7 @@ class KnowledgeDistillator:
                     value = tree.value[node]
                     predicted_class = np.argmax(value)
                     confidence = np.max(value) / np.sum(value)
-                    rules.append(f"IF {rule} THEN class={predicted_class} (confidence={confidence:.3f})")
+                    rules.append(f"IF {rule} THEN class={predicted_class} (confidence={confidence:.4f})")
         
         try:
             recurse(0, 0)
@@ -277,8 +277,10 @@ class KnowledgeDistillator:
         
         return rules
     
-    def train_baseline_decision_tree(self, dataset_name):
-        """训练基础决策树（不使用蒸馏）"""
+    def train_baseline_decision_tree(self, dataset_name, max_depth=5):
+        """训练基础决策树（不使用蒸馏）
+        这是4种模型对比中的第1种：原始决策树
+        """
         data_dict = self.processed_data[dataset_name]
         
         X_train = data_dict['X_train']
@@ -289,7 +291,7 @@ class KnowledgeDistillator:
         
         # 固定参数训练基础决策树（无Optuna）
         model = DecisionTreeClassifier(
-            max_depth=5,
+            max_depth=max_depth,
             min_samples_split=2,
             min_samples_leaf=1,
             max_features='sqrt',
@@ -355,7 +357,7 @@ class KnowledgeDistillator:
                             'T': temperature, 
                             'α': f"{alpha:.1f}", 
                             'D': max_depth,
-                            'Best': f"{best_accuracy:.3f}"
+                            'Best': f"{best_accuracy:.4f}"
                         })
                         result = self.train_student_model(
                             dataset_name=dataset_name,
@@ -442,14 +444,14 @@ class KnowledgeDistillator:
                         for max_depth in max_depth_range:
                             experiment_params.append((dataset_name, k, temperature, alpha, max_depth))
             
-            # 设置并发数量
+            # 设置并发数量（使用线程池避免multiprocessing的编码问题）
             import platform
             if platform.system() == 'Windows':
-                n_jobs = min(4, max(1, mp.cpu_count() // 2))
+                n_jobs = min(4, max(1, os.cpu_count() // 2))
             else:
-                n_jobs = max(1, min(mp.cpu_count() - 1, mp.cpu_count()))
+                n_jobs = max(1, min(os.cpu_count() - 1, os.cpu_count()))
             
-            print(f"     🚀 Using {n_jobs} parallel jobs for Top-k distillation")
+            print(f"     🚀 Using {n_jobs} parallel threads for Top-k distillation")
             
             # 并发执行实验
             def run_single_experiment(params):
@@ -468,25 +470,7 @@ class KnowledgeDistillator:
                 except Exception as e:
                     return params, None, str(e)
             
-            # 使用进程池并行执行
-            if platform.system() == 'Windows':
-                # Windows下使用spawn方法避免pickle问题
-                mp.set_start_method('spawn', force=True)
-            
-            from multiprocessing import Pool
-            from functools import partial
-            
-            # 由于需要访问self，我们需要特殊处理
-            # 序列化实验函数
-            def experiment_worker(params):
-                dataset_name, k, temperature, alpha, max_depth = params
-                # 重新创建所需的对象（这是并发的代价）
-                # 实际执行将在主进程中完成，这里改为串行但有进度显示
-                return params
-            
-            # 因为self无法序列化，改为使用线程池来实现并发
-            from concurrent.futures import ThreadPoolExecutor, as_completed
-            
+            # 使用线程池并行执行（避免multiprocessing的编码问题）
             all_results = []
             with ThreadPoolExecutor(max_workers=n_jobs) as executor:
                 # 提交所有任务
@@ -530,7 +514,7 @@ class KnowledgeDistillator:
                         'T': temperature, 
                         'α': f"{alpha:.1f}", 
                         'D': max_depth,
-                        'Best': f"{best_accuracy:.3f}"
+                        'Best': f"{best_accuracy:.4f}"
                     })
                     progress_bar.update(1)
             
@@ -547,6 +531,213 @@ class KnowledgeDistillator:
         topk_ablation_analyzer.generate_summary_report(prefix='topk_ablation_study')
         
         return results
+    
+    def run_four_model_comparison(self, dataset_names, best_params):
+        """运行4种模型对比实验
+        
+        4种模型：
+        1. Baseline Decision Tree - 原始决策树（不使用蒸馏）
+        2. Teacher Model - 神经网络教师模型
+        3. FKD - Full Knowledge Distillation（使用全部特征的知识蒸馏）
+        4. SHAP-KD - Top-k Knowledge Distillation（使用SHAP选择的Top-k特征）
+        
+        Args:
+            dataset_names: 数据集名称列表
+            best_params: 每个数据集的最佳参数字典
+                格式: {'german': {'k': 10, 'temperature': 3, 'alpha': 0.5, 'max_depth': 5}, ...}
+        
+        Returns:
+            comparison_results: 包含4种模型对比结果的字典
+        """
+        comparison_results = {}
+        
+        for dataset_name in dataset_names:
+            print(f"\n🔬 Running 4-Model Comparison for {dataset_name.upper()}...")
+            comparison_results[dataset_name] = {}
+            
+            data_dict = self.processed_data[dataset_name]
+            X_test = data_dict['X_test']
+            y_test = data_dict['y_test']
+            
+            # 获取该数据集的最佳参数
+            params = best_params.get(dataset_name, {
+                'k': 10, 'temperature': 3.0, 'alpha': 0.5, 'max_depth': 5
+            })
+            
+            # 1️⃣ 原始决策树 (Baseline Decision Tree)
+            print(f"   1️⃣ Training Baseline Decision Tree...")
+            baseline_dt_result = self.train_baseline_decision_tree(
+                dataset_name, 
+                max_depth=params.get('max_depth', 5)
+            )
+            comparison_results[dataset_name]['baseline_dt'] = {
+                'model_name': 'Baseline Decision Tree',
+                'accuracy': baseline_dt_result['accuracy'],
+                'precision': baseline_dt_result['precision'],
+                'recall': baseline_dt_result['recall'],
+                'f1': baseline_dt_result['f1'],
+                'feature_count': baseline_dt_result['feature_count'],
+                'max_depth': params.get('max_depth', 5)
+            }
+            print(f"      Accuracy: {baseline_dt_result['accuracy']:.4f}")
+            
+            # 2️⃣ 教师模型 (Teacher Neural Network)
+            print(f"   2️⃣ Evaluating Teacher Model...")
+            teacher_model = self.teacher_models[dataset_name]['model']
+            teacher_pred = self._get_teacher_hard_predictions(teacher_model, X_test)
+            teacher_accuracy = accuracy_score(y_test, teacher_pred)
+            teacher_precision = precision_score(y_test, teacher_pred, average='weighted', zero_division=0)
+            teacher_recall = recall_score(y_test, teacher_pred, average='weighted', zero_division=0)
+            teacher_f1 = f1_score(y_test, teacher_pred, average='weighted', zero_division=0)
+            
+            comparison_results[dataset_name]['teacher'] = {
+                'model_name': 'Teacher Neural Network',
+                'accuracy': teacher_accuracy,
+                'precision': teacher_precision,
+                'recall': teacher_recall,
+                'f1': teacher_f1,
+                'feature_count': len(data_dict['feature_names'])
+            }
+            print(f"      Accuracy: {teacher_accuracy:.4f}")
+            
+            # 3️⃣ 全特征知识蒸馏 (Full Knowledge Distillation - FKD)
+            print(f"   3️⃣ Training FKD (Full Knowledge Distillation)...")
+            fkd_result = self.train_student_model(
+                dataset_name=dataset_name,
+                model_type_name='decision_tree',
+                k=None,  # 不使用k
+                temperature=params.get('temperature', 3.0),
+                alpha=params.get('alpha', 0.5),
+                max_depth=params.get('max_depth', 5),
+                use_all_features=True  # 使用全部特征
+            )
+            comparison_results[dataset_name]['fkd'] = {
+                'model_name': 'FKD (All Features)',
+                'accuracy': fkd_result['accuracy'],
+                'precision': fkd_result['precision'],
+                'recall': fkd_result['recall'],
+                'f1': fkd_result['f1'],
+                'feature_count': fkd_result['feature_count'],
+                'temperature': params.get('temperature', 3.0),
+                'alpha': params.get('alpha', 0.5),
+                'max_depth': params.get('max_depth', 5)
+            }
+            print(f"      Accuracy: {fkd_result['accuracy']:.4f}")
+            
+            # 4️⃣ Top-k知识蒸馏 (SHAP-KD)
+            print(f"   4️⃣ Training SHAP-KD (Top-{params.get('k', 10)} Features)...")
+            shap_kd_result = self.train_student_model(
+                dataset_name=dataset_name,
+                model_type_name='decision_tree',
+                k=params.get('k', 10),
+                temperature=params.get('temperature', 3.0),
+                alpha=params.get('alpha', 0.5),
+                max_depth=params.get('max_depth', 5),
+                use_all_features=False  # 使用Top-k特征
+            )
+            comparison_results[dataset_name]['shap_kd'] = {
+                'model_name': f'SHAP-KD (Top-{params.get("k", 10)})',
+                'accuracy': shap_kd_result['accuracy'],
+                'precision': shap_kd_result['precision'],
+                'recall': shap_kd_result['recall'],
+                'f1': shap_kd_result['f1'],
+                'feature_count': shap_kd_result['feature_count'],
+                'k': params.get('k', 10),
+                'temperature': params.get('temperature', 3.0),
+                'alpha': params.get('alpha', 0.5),
+                'max_depth': params.get('max_depth', 5)
+            }
+            print(f"      Accuracy: {shap_kd_result['accuracy']:.4f}")
+            
+            print(f"\n   ✅ {dataset_name.upper()} Comparison Complete")
+            print(f"      Baseline DT: {baseline_dt_result['accuracy']:.4f}")
+            print(f"      Teacher: {teacher_accuracy:.4f}")
+            print(f"      FKD: {fkd_result['accuracy']:.4f}")
+            print(f"      SHAP-KD: {shap_kd_result['accuracy']:.4f}")
+        
+        return comparison_results
+    
+    def _get_teacher_hard_predictions(self, teacher_model, X):
+        """获取教师模型的硬预测（类别标签）"""
+        import torch
+        
+        # 检查是否是PyTorch模型
+        if hasattr(teacher_model, 'eval') and hasattr(teacher_model, 'forward'):
+            # PyTorch模型
+            teacher_model.eval()
+            device = next(teacher_model.parameters()).device
+            
+            with torch.no_grad():
+                X_tensor = torch.FloatTensor(X).to(device)
+                outputs = teacher_model(X_tensor)
+                # 对于二分类，将sigmoid输出转换为类别
+                probs = outputs.cpu().numpy().flatten()
+                predictions = (probs > 0.5).astype(int)
+                return predictions
+        else:
+            # sklearn模型
+            return teacher_model.predict(X)
+    
+    def save_four_model_comparison_to_excel(self, comparison_results, timestamp):
+        """保存4种模型对比结果到Excel
+        
+        Args:
+            comparison_results: run_four_model_comparison返回的结果字典
+            timestamp: 时间戳字符串
+        
+        Returns:
+            filename: 保存的Excel文件路径
+        """
+        filename = f"results/four_model_comparison_{timestamp}.xlsx"
+        
+        with pd.ExcelWriter(filename, engine='openpyxl') as writer:
+            # 为每个数据集创建一个sheet
+            for dataset_name, models in comparison_results.items():
+                data = []
+                for model_key, model_result in models.items():
+                    row = {
+                        'Model': model_result['model_name'],
+                        'Accuracy': f"{model_result['accuracy']:.4f}",
+                        'Precision': f"{model_result['precision']:.4f}",
+                        'Recall': f"{model_result['recall']:.4f}",
+                        'F1_Score': f"{model_result['f1']:.4f}",
+                        'Feature_Count': model_result.get('feature_count', 'N/A')
+                    }
+                    
+                    # 添加特定模型的额外参数
+                    if 'k' in model_result:
+                        row['k'] = model_result['k']
+                    if 'temperature' in model_result:
+                        row['Temperature'] = model_result['temperature']
+                    if 'alpha' in model_result:
+                        row['Alpha'] = model_result['alpha']
+                    if 'max_depth' in model_result:
+                        row['Max_Depth'] = model_result['max_depth']
+                    
+                    data.append(row)
+                
+                df = pd.DataFrame(data)
+                df.to_excel(writer, sheet_name=dataset_name.upper(), index=False)
+            
+            # 创建汇总sheet
+            summary_data = []
+            for dataset_name, models in comparison_results.items():
+                for model_key, model_result in models.items():
+                    summary_data.append({
+                        'Dataset': dataset_name.upper(),
+                        'Model': model_result['model_name'],
+                        'Accuracy': f"{model_result['accuracy']:.4f}",
+                        'F1_Score': f"{model_result['f1']:.4f}",
+                        'Feature_Count': model_result.get('feature_count', 'N/A')
+                    })
+            
+            summary_df = pd.DataFrame(summary_data)
+            # 按数据集和准确率排序
+            summary_df = summary_df.sort_values(['Dataset', 'Accuracy'], ascending=[True, False])
+            summary_df.to_excel(writer, sheet_name='SUMMARY', index=False)
+        
+        print(f"\n📊 Four-Model Comparison saved to: {filename}")
+        return filename
     
 
 

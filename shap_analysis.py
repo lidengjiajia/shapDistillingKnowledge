@@ -5,7 +5,6 @@ SHAP Feature Importance Analysis Module
 
 import numpy as np
 import os
-from multiprocessing import cpu_count
 # 设置matplotlib后端为非交互式，避免多线程问题
 import matplotlib
 matplotlib.use('Agg')
@@ -38,15 +37,16 @@ class SHAPAnalyzer:
         self.processed_data = processed_data
         self.decision_tree_models = {}
         
-        # 设置并发数量：Windows平台使用较少的jobs避免问题
+        # 设置并发数量：Windows平台强制使用单线程避免中文路径编码问题
         import platform
         if platform.system() == 'Windows':
-            # Windows上限制并发数量，避免进程管理问题
-            self.n_jobs = min(4, max(1, cpu_count() // 2))
+            # Windows下禁用并行，避免joblib/multiprocessing的中文路径编码问题
+            self.n_jobs = 1
+            print(f"🔧 SHAP Analyzer initialized with n_jobs=1 (Windows - avoiding encoding issues)")
         else:
             # Linux/Mac可以使用更多并发
-            self.n_jobs = max(1, min(cpu_count() - 1, cpu_count()))
-        print(f"🔧 SHAP Analyzer initialized with {self.n_jobs} parallel jobs (CPU cores: {cpu_count()}, Platform: {platform.system()})")
+            self.n_jobs = max(1, min(os.cpu_count() - 1, os.cpu_count()))
+            print(f"🔧 SHAP Analyzer initialized with {self.n_jobs} parallel jobs (CPU cores: {os.cpu_count()}, Platform: {platform.system()})")
         
     def train_decision_trees(self):
         """Train decision tree models for each dataset for SHAP analysis"""
@@ -498,6 +498,50 @@ class SHAPAnalyzer:
                 else:
                     original_names.append(feature)
             else:
-                original_names.append(feature)
+                    original_names.append(feature)
         
         return original_names
+    
+    def visualize_shap_importance(self, dataset_name, shap_results, save_path=None):
+        """可视化SHAP特征重要性
+        
+        Args:
+            dataset_name: 数据集名称
+            shap_results: compute_shap_values返回的结果字典
+            save_path: 保存路径，如果为None则不保存
+        """
+        import matplotlib.pyplot as plt
+        import numpy as np
+        
+        # 获取特征重要性
+        sorted_features = shap_results['sorted_features']
+        feature_names = [f[0] for f in sorted_features[:20]]  # 取前20个特征
+        importances = [f[1] for f in sorted_features[:20]]
+        
+        # 创建图表
+        fig, ax = plt.subplots(figsize=(10, 8))
+        
+        # 绘制水平条形图
+        y_pos = np.arange(len(feature_names))
+        ax.barh(y_pos, importances, color='#7BB3F0', edgecolor='black', linewidth=0.5)
+        
+        # 设置标签
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(feature_names)
+        ax.invert_yaxis()  # 最重要的特征在顶部
+        ax.set_xlabel('Mean |SHAP Value|', fontsize=12)
+        ax.set_title(f'SHAP Feature Importance - {dataset_name.upper()}', fontsize=14, fontweight='bold')
+        
+        # 添加网格
+        ax.grid(axis='x', alpha=0.3, linestyle='--')
+        
+        # 调整布局
+        plt.tight_layout()
+        
+        # 保存或显示
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
+            print(f"   📊 SHAP visualization saved: {save_path}")
+        
+        plt.close()
+

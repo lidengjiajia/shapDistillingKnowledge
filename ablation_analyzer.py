@@ -220,7 +220,7 @@ class AblationStudyAnalyzer:
             else:  # german
                 offset_x, offset_y = 5, 10  # German居中
                 
-            ax.annotate(f'{max_acc:.3f}', 
+            ax.annotate(f'{max_acc:.4f}', 
                        xy=(max_alpha, max_acc), 
                        xytext=(offset_x, offset_y), textcoords='offset points',
                        fontsize=9, color=dataset_colors[dataset],
@@ -338,7 +338,7 @@ class AblationStudyAnalyzer:
         report.append("🔍 Parameter Impact Analysis:")
         for param in ['k', 'temperature', 'alpha', 'max_depth']:
             correlation = df.groupby(param)['accuracy'].mean().corr(df.groupby(param).size())
-            report.append(f"   • {param.upper()}: {correlation:.3f} correlation with accuracy")
+            report.append(f"   • {param.upper()}: {correlation:.4f} correlation with accuracy")
             
         report_text = "\n".join(report)
         

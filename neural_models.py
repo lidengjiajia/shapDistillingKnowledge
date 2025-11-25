@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from multiprocessing import cpu_count
+import os
 import pandas as pd
 import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
@@ -36,7 +36,7 @@ if platform.system() == 'Windows':
     n_workers = 0
 else:
     # Linux/Mac可以使用更多worker
-    n_workers = max(1, min(cpu_count() - 1, cpu_count()))
+    n_workers = max(1, min(os.cpu_count() - 1, os.cpu_count()))
 # 只在需要时显示配置信息，避免重复输出
 
 # 只在第一次导入时显示设备信息
@@ -144,6 +144,43 @@ class CreditNet(nn.Module):
                 nn.Linear(16, 1),
                 nn.Sigmoid()
             )
+        elif dataset_type == 'xinwang':
+            # Very deep architecture for large Xinwang dataset (17,886 samples, 97 features)
+            # Designed for high-dimensional credit risk assessment
+            # Uses residual connections to enable deeper networks
+            self.input_layer = nn.Linear(input_dim, 512)
+            self.bn1 = nn.BatchNorm1d(512)
+            
+            # 第一个残差块
+            self.fc1 = nn.Linear(512, 384)
+            self.bn2 = nn.BatchNorm1d(384)
+            self.fc2 = nn.Linear(384, 384)
+            self.bn3 = nn.BatchNorm1d(384)
+            self.shortcut1 = nn.Linear(512, 384)
+            
+            # 第二个残差块
+            self.fc3 = nn.Linear(384, 256)
+            self.bn4 = nn.BatchNorm1d(256)
+            self.fc4 = nn.Linear(256, 256)
+            self.bn5 = nn.BatchNorm1d(256)
+            self.shortcut2 = nn.Linear(384, 256)
+            
+            # 第三个残差块
+            self.fc5 = nn.Linear(256, 128)
+            self.bn6 = nn.BatchNorm1d(128)
+            self.fc6 = nn.Linear(128, 128)
+            self.bn7 = nn.BatchNorm1d(128)
+            self.shortcut3 = nn.Linear(256, 128)
+            
+            # 最终分类层
+            self.fc7 = nn.Linear(128, 64)
+            self.bn8 = nn.BatchNorm1d(64)
+            self.fc8 = nn.Linear(64, 32)
+            self.fc9 = nn.Linear(32, 1)
+            
+            self.relu = nn.ReLU()
+            self.dropout = nn.Dropout(0.4)
+            self.sigmoid = nn.Sigmoid()
         
         # Weight initialization based on Xavier/Glorot initialization
         self._initialize_weights()
@@ -161,7 +198,7 @@ class CreditNet(nn.Module):
             # 对于Australian和UCI数据集使用Sequential layers
             return self.layers(x)
         else:
-            # 对于German数据集使用残差连接
+            # 对于German和Xinwang数据集使用残差连接
             # 输入层
             x = self.relu(self.bn1(self.input_layer(x)))
             x = self.dropout(x)
@@ -182,13 +219,28 @@ class CreditNet(nn.Module):
             x = self.relu(x + identity2)  # 残差连接
             x = self.dropout(x)
             
-            # 最终分类层
-            x = self.relu(self.bn6(self.fc5(x)))
-            x = self.dropout(x)
-            x = self.relu(self.fc6(x))
+            # 第三个残差块（仅Xinwang使用）
+            if hasattr(self, 'shortcut3'):
+                identity3 = self.shortcut3(x)
+                x = self.relu(self.bn6(self.fc5(x)))
+                x = self.dropout(x)
+                x = self.bn7(self.fc6(x))
+                x = self.relu(x + identity3)  # 残差连接
+                x = self.dropout(x)
+                
+                # Xinwang的最终分类层
+                x = self.relu(self.bn8(self.fc7(x)))
+                x = self.dropout(x)
+                x = self.relu(self.fc8(x))
+                x = self.fc9(x)
+            else:
+                # German的最终分类层
+                x = self.relu(self.bn6(self.fc5(x)))
+                x = self.dropout(x)
+                x = self.relu(self.fc6(x))
+                x = self.fc7(x)
             
             # 最后一层输出 - 支持logits或sigmoid
-            x = self.fc7(x)
             if hasattr(self, 'sigmoid') and not isinstance(self.sigmoid, nn.Identity):
                 x = self.sigmoid(x)
             
@@ -570,5 +622,5 @@ if __name__ == "__main__":
         print(f"{dataset_name.upper()} Dataset Results:")
         print(f"  Accuracy: {model_info['accuracy']:.4f}")
         print(f"  F1 Score: {model_info['f1']:.4f}")
-        print(f"  Training Time: {model_info['training_time']:.2f}s")
-        print(f"  Model Size: {model_info['model_size']:.2f}KB")
+        print(f"  Training Time: {model_info['training_time']:.4f}s")
+        print(f"  Model Size: {model_info['model_size']:.4f}KB")

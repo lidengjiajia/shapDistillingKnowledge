@@ -107,6 +107,73 @@ class DataPreprocessor:
         
         return X_train_scaled, X_val_scaled, X_test_scaled, y_train.values, y_val.values, y_test.values
     
+    def load_xinwang(self):
+        """加载Xinwang信用数据集"""
+        print("🔄 Loading Xinwang Credit dataset...")
+        
+        try:
+            df = pd.read_csv('data/xinwang.csv')
+        except FileNotFoundError:
+            print("❌ Xinwang credit data file not found. Please ensure 'data/xinwang.csv' exists.")
+            return None
+        
+        print(f"Xinwang Credit original shape: {df.shape}")
+        
+        # 目标列是'target'
+        target_col = 'target'
+        
+        # 处理缺失值 - 用-99表示的缺失值
+        for col in df.columns:
+            if col != target_col:
+                # 将-99替换为NaN
+                df[col] = df[col].replace(-99, np.nan)
+                # 用中位数填充数值型缺失值
+                if df[col].dtype != 'object':
+                    df[col].fillna(df[col].median(), inplace=True)
+                else:
+                    df[col].fillna(df[col].mode()[0] if len(df[col].mode()) > 0 else 'Unknown', inplace=True)
+        
+        # 处理可能的分类变量 (province, industry, scope, judicial)
+        categorical_cols = ['province', 'industry', 'scope', 'judicial']
+        for col in categorical_cols:
+            if col in df.columns and df[col].dtype == 'object':
+                # 使用Label Encoding处理分类变量
+                le = LabelEncoder()
+                df[col] = le.fit_transform(df[col].astype(str))
+                self.label_encoders[f'xinwang_{col}'] = le
+        
+        # 分离特征和目标
+        X = df.drop(columns=[target_col])
+        y = df[target_col]
+        
+        # 确保目标变量是0和1
+        if y.min() != 0 or y.max() != 1:
+            print(f"⚠️  Warning: Target values range from {y.min()} to {y.max()}, mapping to 0-1")
+            y = (y > 0).astype(int)
+        
+        # 数据集划分：60% train, 20% validation, 20% test
+        X_temp, X_test, y_temp, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_temp, y_temp, test_size=0.25, random_state=42, stratify=y_temp
+        )
+        
+        # 标准化特征
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_val_scaled = scaler.transform(X_val)
+        X_test_scaled = scaler.transform(X_test)
+        
+        # 保存scaler和特征名
+        self.scalers['xinwang'] = scaler
+        self.feature_names['xinwang'] = list(X.columns)
+        
+        print(f"Xinwang dataset split: Train: {X_train_scaled.shape}, Val: {X_val_scaled.shape}, Test: {X_test_scaled.shape}")
+        print(f"Target distribution - Train: {np.bincount(y_train)}, Val: {np.bincount(y_val)}, Test: {np.bincount(y_test)}")
+        
+        return X_train_scaled, X_val_scaled, X_test_scaled, y_train.values, y_val.values, y_test.values
+    
     def load_australian_credit(self):
         """加载Australian信用数据集"""
         print("🔄 Loading Australian Credit dataset...")
@@ -208,7 +275,6 @@ class DataPreprocessor:
             # 假设最后一列是目标列
             target_col = df.columns[-1]
         
-        # 处理异常值和缺失值
         # 移除ID列如果存在
         if 'ID' in df.columns:
             df.drop('ID', axis=1, inplace=True)
@@ -223,6 +289,12 @@ class DataPreprocessor:
         
         if 'MARRIAGE' in df.columns:
             df['MARRIAGE'] = df['MARRIAGE'].replace({0: 3})  # 0替换为3
+        
+        # 强制所有特征为数值型
+        for col in df.columns:
+            if col != target_col:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+        df[target_col] = pd.to_numeric(df[target_col], errors='coerce').fillna(0).astype(int)
         
         # 分割特征和目标
         X = df.drop(target_col, axis=1)
@@ -333,6 +405,21 @@ class DataPreprocessor:
             print(f"uci dataset split:")
             print(f"  Train: {processed_data['uci']['X_train'].shape}, Val: {processed_data['uci']['X_val'].shape}, Test: {processed_data['uci']['X_test'].shape}")
             print(f"  Class distribution - Train: {np.bincount(processed_data['uci']['y_train'])}, Val: {np.bincount(processed_data['uci']['y_val'])}, Test: {np.bincount(processed_data['uci']['y_test'])}")
+        
+        # 处理Xinwang数据集
+        xinwang_data = self.load_xinwang()
+        if xinwang_data is not None:
+            X_train, X_val, X_test, y_train, y_val, y_test = xinwang_data
+            processed_data['xinwang'] = {
+                'X_train': X_train, 'X_val': X_val, 'X_test': X_test,
+                'y_train': y_train, 'y_val': y_val, 'y_test': y_test,
+                'feature_names': self.feature_names['xinwang'],
+                'scaler': self.scalers['xinwang']
+            }
+            print(f"🔧 Processing xinwang dataset...")
+            print(f"xinwang dataset split:")
+            print(f"  Train: {processed_data['xinwang']['X_train'].shape}, Val: {processed_data['xinwang']['X_val'].shape}, Test: {processed_data['xinwang']['X_test'].shape}")
+            print(f"  Class distribution - Train: {np.bincount(processed_data['xinwang']['y_train'])}, Val: {np.bincount(processed_data['xinwang']['y_val'])}, Test: {np.bincount(processed_data['xinwang']['y_test'])}")
         
         print("✅ All datasets processed successfully!")
         return processed_data
