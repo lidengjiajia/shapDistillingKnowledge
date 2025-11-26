@@ -649,6 +649,28 @@ class KnowledgeDistillator:
             }
             print(f"      Accuracy: {shap_kd_result['accuracy']:.4f}")
             
+            # 🌲 保存SHAP-KD决策树规则
+            print(f"   🌲 Extracting and saving SHAP-KD decision tree rules...")
+            self._save_decision_tree_rules(
+                model=shap_kd_result['model'],
+                dataset_name=dataset_name,
+                model_type='SHAP-KD',
+                feature_names=shap_kd_result.get('feature_names', data_dict['feature_names'][:params.get('k', 10)]),
+                params=params
+            )
+            
+            # 🛤️ 保存SHAP-KD决策树路径（每个样本的具体路径）
+            print(f"   🛤️ Extracting and saving SHAP-KD decision tree paths...")
+            self._save_decision_tree_paths(
+                model=shap_kd_result['model'],
+                dataset_name=dataset_name,
+                model_type='SHAP-KD',
+                X_test=data_dict['X_test'][:, shap_kd_result.get('selected_features', range(params.get('k', 10)))],
+                y_test=data_dict['y_test'],
+                feature_names=shap_kd_result.get('feature_names', data_dict['feature_names'][:params.get('k', 10)]),
+                params=params
+            )
+            
             print(f"\n   ✅ {dataset_name.upper()} Comparison Complete")
             print(f"      Baseline DT: {baseline_dt_result['accuracy']:.4f}")
             print(f"      Teacher: {teacher_accuracy:.4f}")
@@ -739,5 +761,248 @@ class KnowledgeDistillator:
         print(f"\n📊 Four-Model Comparison saved to: {filename}")
         return filename
     
+    def _save_decision_tree_rules(self, model, dataset_name, model_type, feature_names, params):
+        """提取并保存决策树规则到文本文件
+        
+        Args:
+            model: 训练好的决策树模型
+            dataset_name: 数据集名称
+            model_type: 模型类型 (如 'SHAP-KD', 'FKD', 'Baseline')
+            feature_names: 特征名称列表
+            params: 模型参数字典
+        """
+        from sklearn.tree import _tree
+        import os
+        
+        # 创建results目录
+        os.makedirs('results', exist_ok=True)
+        
+        # 构建文件名
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"results/{dataset_name}_{model_type}_decision_rules_{timestamp}.txt"
+        
+        tree = model.tree_
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            # 写入头部信息
+            f.write("="*80 + "\n")
+            f.write(f"决策树规则提取 - {dataset_name.upper()} 数据集\n")
+            f.write(f"模型类型: {model_type}\n")
+            f.write("="*80 + "\n\n")
+            
+            # 写入模型参数
+            f.write("模型参数:\n")
+            f.write("-"*80 + "\n")
+            for key, value in params.items():
+                f.write(f"  {key}: {value}\n")
+            f.write("\n")
+            
+            # 写入树的基本信息
+            f.write("决策树信息:\n")
+            f.write("-"*80 + "\n")
+            f.write(f"  节点总数: {tree.node_count}\n")
+            f.write(f"  最大深度: {tree.max_depth}\n")
+            f.write(f"  叶子节点数: {tree.n_leaves}\n")
+            f.write(f"  使用特征数: {len(feature_names)}\n")
+            f.write("\n")
+            
+            # 写入特征名称
+            f.write("使用的特征:\n")
+            f.write("-"*80 + "\n")
+            for i, fname in enumerate(feature_names, 1):
+                f.write(f"  {i}. {fname}\n")
+            f.write("\n")
+            
+            # 提取并写入决策规则
+            f.write("决策规则:\n")
+            f.write("="*80 + "\n\n")
+            
+            rule_count = [0]  # 使用列表以便在递归函数中修改
+            
+            def recurse(node, depth, rule_path=""):
+                """递归提取规则"""
+                indent = "  " * depth
+                
+                if tree.feature[node] != _tree.TREE_UNDEFINED:
+                    # 内部节点
+                    feature_name = feature_names[tree.feature[node]]
+                    threshold = tree.threshold[node]
+                    
+                    # 左子树 (<=)
+                    left_rule = f"{rule_path}{'AND ' if rule_path else ''}({feature_name} <= {threshold:.4f})"
+                    recurse(tree.children_left[node], depth + 1, left_rule + " ")
+                    
+                    # 右子树 (>)
+                    right_rule = f"{rule_path}{'AND ' if rule_path else ''}({feature_name} > {threshold:.4f})"
+                    recurse(tree.children_right[node], depth + 1, right_rule + " ")
+                else:
+                    # 叶子节点 - 生成规则
+                    rule_count[0] += 1
+                    value = tree.value[node][0]
+                    predicted_class = np.argmax(value)
+                    samples = np.sum(value)
+                    confidence = np.max(value) / samples if samples > 0 else 0
+                    
+                    f.write(f"规则 {rule_count[0]}:\n")
+                    f.write(f"{indent}IF {rule_path.strip()}\n")
+                    f.write(f"{indent}THEN 预测类别 = {predicted_class}\n")
+                    f.write(f"{indent}     置信度 = {confidence:.4f} ({int(np.max(value))}/{int(samples)} 样本)\n")
+                    f.write(f"{indent}     样本分布 = {[int(x) for x in value]}\n")
+                    f.write("\n")
+            
+            # 开始递归提取
+            try:
+                recurse(0, 0)
+                f.write("="*80 + "\n")
+                f.write(f"总共提取了 {rule_count[0]} 条规则\n")
+                f.write("="*80 + "\n")
+            except Exception as e:
+                f.write(f"\n提取规则时出错: {str(e)}\n")
+        
+        print(f"      Rules saved to: {filename}")
+        return filename
+    
+    def _save_decision_tree_paths(self, model, dataset_name, model_type, X_test, y_test, feature_names, params):
+        """提取并保存每个测试样本通过决策树的路径
+        
+        Args:
+            model: 训练好的决策树模型
+            dataset_name: 数据集名称
+            model_type: 模型类型 (如 'SHAP-KD')
+            X_test: 测试集特征
+            y_test: 测试集真实标签
+            feature_names: 特征名称列表
+            params: 模型参数字典
+        """
+        from sklearn.tree import _tree
+        import os
+        
+        # 创建results目录
+        os.makedirs('results', exist_ok=True)
+        
+        # 构建文件名
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"results/{dataset_name}_{model_type}_tree_paths_{timestamp}.txt"
+        
+        tree = model.tree_
+        y_pred = model.predict(X_test)
+        
+        # 获取每个样本的决策路径
+        decision_paths = model.decision_path(X_test)
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            # 写入头部信息
+            f.write("="*100 + "\n")
+            f.write(f"决策树路径提取 - {dataset_name.upper()} 数据集\n")
+            f.write(f"模型类型: {model_type}\n")
+            f.write("="*100 + "\n\n")
+            
+            # 写入模型参数
+            f.write("模型参数:\n")
+            f.write("-"*100 + "\n")
+            for key, value in params.items():
+                f.write(f"  {key}: {value}\n")
+            f.write("\n")
+            
+            # 写入统计信息
+            f.write("路径统计:\n")
+            f.write("-"*100 + "\n")
+            f.write(f"  测试样本总数: {len(X_test)}\n")
+            f.write(f"  特征数量: {len(feature_names)}\n")
+            f.write(f"  树的最大深度: {tree.max_depth}\n")
+            f.write(f"  预测准确率: {accuracy_score(y_test, y_pred):.4f}\n")
+            f.write("\n")
+            
+            # 提取每个样本的路径
+            f.write("样本决策路径:\n")
+            f.write("="*100 + "\n\n")
+            
+            # 计算路径长度分布
+            path_lengths = []
+            
+            for sample_idx in range(len(X_test)):
+                # 获取该样本经过的节点
+                node_indices = decision_paths.indices[decision_paths.indptr[sample_idx]:
+                                                     decision_paths.indptr[sample_idx + 1]]
+                
+                path_length = len(node_indices)
+                path_lengths.append(path_length)
+                
+                # 写入样本信息
+                f.write(f"样本 {sample_idx + 1}:\n")
+                f.write(f"  真实标签: {int(y_test[sample_idx])}, 预测标签: {int(y_pred[sample_idx])}, ")
+                f.write(f"预测结果: {'✓正确' if y_test[sample_idx] == y_pred[sample_idx] else '✗错误'}\n")
+                f.write(f"  路径长度: {path_length} (经过 {path_length} 个节点)\n")
+                f.write(f"  决策路径:\n")
+                
+                # 逐个节点追踪路径
+                for depth, node_id in enumerate(node_indices):
+                    indent = "    " + "  " * depth
+                    
+                    if tree.feature[node_id] != _tree.TREE_UNDEFINED:
+                        # 内部节点
+                        feature_name = feature_names[tree.feature[node_id]]
+                        threshold = tree.threshold[node_id]
+                        feature_value = X_test[sample_idx, tree.feature[node_id]]
+                        
+                        # 判断走向
+                        if feature_value <= threshold:
+                            direction = "左分支 (≤)"
+                            symbol = "✓"
+                        else:
+                            direction = "右分支 (>)"
+                            symbol = "✗"
+                        
+                        f.write(f"{indent}节点 {node_id}: [{feature_name}] = {feature_value:.4f} ")
+                        f.write(f"{symbol} (阈值: {threshold:.4f}) → {direction}\n")
+                    else:
+                        # 叶子节点
+                        value = tree.value[node_id][0]
+                        predicted_class = np.argmax(value)
+                        samples = np.sum(value)
+                        confidence = np.max(value) / samples if samples > 0 else 0
+                        
+                        f.write(f"{indent}叶子节点 {node_id}: 预测类别 = {predicted_class}, ")
+                        f.write(f"置信度 = {confidence:.4f}, 样本分布 = {[int(x) for x in value]}\n")
+                
+                f.write("\n")
+                
+                # 每50个样本输出一次进度
+                if (sample_idx + 1) % 50 == 0:
+                    f.write(f"--- 已处理 {sample_idx + 1}/{len(X_test)} 个样本 ---\n\n")
+            
+            # 写入路径统计分析
+            f.write("="*100 + "\n")
+            f.write("路径长度分析:\n")
+            f.write("-"*100 + "\n")
+            f.write(f"  平均路径长度: {np.mean(path_lengths):.2f}\n")
+            f.write(f"  最短路径: {np.min(path_lengths)}\n")
+            f.write(f"  最长路径: {np.max(path_lengths)}\n")
+            f.write(f"  路径长度标准差: {np.std(path_lengths):.2f}\n")
+            f.write("\n")
+            
+            # 按路径长度统计样本数
+            unique_lengths, counts = np.unique(path_lengths, return_counts=True)
+            f.write("路径长度分布:\n")
+            for length, count in zip(unique_lengths, counts):
+                percentage = count / len(path_lengths) * 100
+                f.write(f"  长度 {length}: {count} 个样本 ({percentage:.2f}%)\n")
+            
+            f.write("="*100 + "\n")
+            f.write(f"总共提取了 {len(X_test)} 个样本的决策路径\n")
+            f.write("="*100 + "\n")
+        
+        print(f"      Paths saved to: {filename}")
+        return filename
+    
+
+
+
+
+
+
+
+
+
 
 

@@ -165,6 +165,17 @@ class DataPreprocessor:
         X_val_scaled = scaler.transform(X_val)
         X_test_scaled = scaler.transform(X_test)
         
+        # 数据验证 - 检查NaN和Inf
+        if np.isnan(X_train_scaled).any():
+            print(f"⚠️  Warning: NaN detected in X_train after scaling, replacing with 0")
+            X_train_scaled = np.nan_to_num(X_train_scaled, nan=0.0, posinf=0.0, neginf=0.0)
+        if np.isnan(X_val_scaled).any():
+            print(f"⚠️  Warning: NaN detected in X_val after scaling, replacing with 0")
+            X_val_scaled = np.nan_to_num(X_val_scaled, nan=0.0, posinf=0.0, neginf=0.0)
+        if np.isnan(X_test_scaled).any():
+            print(f"⚠️  Warning: NaN detected in X_test after scaling, replacing with 0")
+            X_test_scaled = np.nan_to_num(X_test_scaled, nan=0.0, posinf=0.0, neginf=0.0)
+        
         # 保存scaler和特征名
         self.scalers['xinwang'] = scaler
         self.feature_names['xinwang'] = list(X.columns)

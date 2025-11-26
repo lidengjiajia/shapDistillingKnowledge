@@ -56,9 +56,9 @@ class AblationStudyAnalyzer:
             
         df = pd.DataFrame(self.ablation_results)
         
-        # 数据集颜色映射 - 使用柔和好看的配色（与SHAP图一致）
+        # 数据集颜色映射 - 使用柔和好看的配色（与SHAP图一致），支持4个数据集
         datasets = df['dataset'].unique()
-        colors = ['#7BB3F0', '#DDA0DD', '#FFB366']  # 柔和蓝色、柔和紫色、柔和橙色
+        colors = ['#7BB3F0', '#DDA0DD', '#FFB366', '#90EE90']  # 柔和蓝色、柔和紫色、柔和橙色、柔和绿色
         dataset_colors = dict(zip(datasets, colors[:len(datasets)]))
         
         saved_plots = []
@@ -66,6 +66,20 @@ class AblationStudyAnalyzer:
         # 1. Top-k特征数量分析 (如果数据中有k列且还没生成过)
         if 'k' in df.columns:
             topk_plot_path = f'results/topk_ablation_visualization_{self.experiment_timestamp}.png'
+            topk_csv_path = f'results/topk_ablation_data_{self.experiment_timestamp}.csv'
+            
+            # 导出Top-k图的原始数据到单独的CSV
+            topk_df = df[df['k'].notna()].copy()
+            # 按数据集和k值分组，取每个k值的最高准确率
+            topk_summary = topk_df.groupby(['dataset', 'k']).agg({
+                'accuracy': 'max',
+                'f1_score': 'max',
+                'precision': 'max',
+                'recall': 'max'
+            }).reset_index()
+            topk_summary.to_csv(topk_csv_path, index=False, encoding='utf-8-sig')
+            print(f"✅ Top-k ablation data saved: {topk_csv_path}")
+            
             # 检查是否已存在，避免重复生成
             import os
             if not os.path.exists(topk_plot_path):
@@ -82,6 +96,20 @@ class AblationStudyAnalyzer:
         # 2. 决策树深度分析 (如果数据中有max_depth列且还没生成过)
         if 'max_depth' in df.columns:
             depth_plot_path = f'results/depth_ablation_visualization_{self.experiment_timestamp}.png'
+            depth_csv_path = f'results/depth_ablation_data_{self.experiment_timestamp}.csv'
+            
+            # 导出Depth图的原始数据到单独的CSV
+            depth_df = df[df['max_depth'].notna()].copy()
+            # 按数据集和深度分组，取每个深度值的最高准确率
+            depth_summary = depth_df.groupby(['dataset', 'max_depth']).agg({
+                'accuracy': 'max',
+                'f1_score': 'max',
+                'precision': 'max',
+                'recall': 'max'
+            }).reset_index()
+            depth_summary.to_csv(depth_csv_path, index=False, encoding='utf-8-sig')
+            print(f"✅ Depth ablation data saved: {depth_csv_path}")
+            
             import os
             if not os.path.exists(depth_plot_path):
                 fig2, ax2 = plt.subplots(1, 1, figsize=(12, 8))

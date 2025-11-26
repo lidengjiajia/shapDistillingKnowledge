@@ -164,11 +164,13 @@ def main():
         for dataset_name, results in distillation_results.items():
             if 'best' in results:
                 best_result = results['best']
+                if best_result is None:
+                    print(f"[警告] 数据集 {dataset_name} 未找到最佳参数，所有实验均失败或无效。")
                 best_params[dataset_name] = {
                     'k': results.get('best_k', 10),
-                    'temperature': best_result.get('temperature', 3.0),
-                    'alpha': best_result.get('alpha', 0.5),
-                    'max_depth': best_result.get('max_depth', 5)
+                    'temperature': (best_result or {}).get('temperature', 3.0),
+                    'alpha': (best_result or {}).get('alpha', 0.5),
+                    'max_depth': (best_result or {}).get('max_depth', 5)
                 }
         
         # 运行4种模型对比

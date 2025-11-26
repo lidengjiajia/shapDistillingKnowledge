@@ -266,16 +266,38 @@ class NeuralNetworkTrainer:
             for inputs, labels in train_loader:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 
+                # 数据验证 - 检查是否有NaN或Inf
+                if torch.isnan(inputs).any() or torch.isinf(inputs).any():
+                    print(f"⚠️  Warning: NaN or Inf detected in inputs, skipping batch")
+                    continue
+                
+                if torch.isnan(labels).any() or torch.isinf(labels).any():
+                    print(f"⚠️  Warning: NaN or Inf detected in labels, skipping batch")
+                    continue
+                
                 # Forward pass
                 outputs = model(inputs)
                 
+                # 检查模型输出
+                if torch.isnan(outputs).any() or torch.isinf(outputs).any():
+                    print(f"⚠️  Warning: NaN or Inf detected in model outputs")
+                    print(f"   Outputs range: [{outputs.min().item():.4f}, {outputs.max().item():.4f}]")
+                    continue
+                
                 # 根据损失函数类型调整标签格式
                 if use_logits and isinstance(criterion, nn.BCEWithLogitsLoss):
-                    # BCEWithLogitsLoss需要float标签，不需要unsqueeze
-                    loss = criterion(outputs.squeeze(), labels.float())
+                    # BCEWithLogitsLoss需要float标签(已经是float)，需要squeeze以匹配outputs形状
+                    loss = criterion(outputs.squeeze(), labels)
                 else:
                     # BCELoss需要unsqueeze的标签
-                    loss = criterion(outputs, labels.unsqueeze(1).float())
+                    loss = criterion(outputs, labels.unsqueeze(1))
+                
+                # 检查loss是否有效
+                if torch.isnan(loss) or torch.isinf(loss):
+                    print(f"⚠️  Warning: NaN or Inf loss detected")
+                    print(f"   Outputs: {outputs.squeeze()[:5]}")
+                    print(f"   Labels: {labels.float()[:5]}")
+                    continue
                 
                 # Backward pass and optimization
                 optimizer.zero_grad()
@@ -449,11 +471,12 @@ class NeuralNetworkTrainer:
         """创建数据加载器"""
         # 转换为PyTorch张量
         X_train_tensor = torch.FloatTensor(data_dict['X_train'])
-        y_train_tensor = torch.LongTensor(data_dict['y_train'])
+        # 确保标签是float类型以兼容BCEWithLogitsLoss
+        y_train_tensor = torch.FloatTensor(data_dict['y_train'])
         X_val_tensor = torch.FloatTensor(data_dict['X_val'])
-        y_val_tensor = torch.LongTensor(data_dict['y_val'])
+        y_val_tensor = torch.FloatTensor(data_dict['y_val'])
         X_test_tensor = torch.FloatTensor(data_dict['X_test'])
-        y_test_tensor = torch.LongTensor(data_dict['y_test'])
+        y_test_tensor = torch.FloatTensor(data_dict['y_test'])
         
         # 创建数据加载器 - 使用并发加载
         train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
@@ -498,6 +521,12 @@ def create_teacher_model(dataset_name, processed_data):
         num_epochs = 150  # 减少epochs
         patience = 15
         weight_decay = 1e-3
+    elif dataset_name == 'xinwang':
+        batch_size = 64   # 较大batch size适合数据量较大的数据集
+        learning_rate = 0.001  # 适中学习率
+        num_epochs = 150  # 适度epochs
+        patience = 20     # 早停耐心
+        weight_decay = 1e-3  # 正则化防止过拟合
     else:  # german - 优化的参数以提高性能并减少训练时间
         batch_size = 64   # 增大batch size以加速训练
         learning_rate = 0.001  # 适中的学习率平衡速度和稳定性
@@ -510,8 +539,8 @@ def create_teacher_model(dataset_name, processed_data):
     # Create model
     model = CreditNet(input_dim, dataset_name).to(device)
     
-    # 为German数据集计算类别权重以处理不平衡数据
-    if dataset_name == 'german':
+    # 为German和Xinwang数据集计算类别权重以处理不平衡数据
+    if dataset_name in ['german', 'xinwang']:
         y_train = data_dict['y_train']
         # 计算类别权重：少数类权重更高
         n_samples = len(y_train)
@@ -519,15 +548,14 @@ def create_teacher_model(dataset_name, processed_data):
         class_counts = np.bincount(y_train)
         # 使用balanced策略计算权重
         class_weights = n_samples / (n_classes * class_counts)
-        print(f"     German数据集类别分布: {class_counts}")
+        print(f"     {dataset_name.upper()}数据集类别分布: {class_counts}")
         print(f"     计算的类别权重: {class_weights}")
         
         # 将权重转换为tensor并设置损失函数
-        weight_tensor = torch.FloatTensor([class_weights[0], class_weights[1]]).to(device)
         # 使用带权重的BCEWithLogitsLoss提高数值稳定性
         criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(class_weights[1]/class_weights[0]).to(device))
         
-        # 为German数据集修改模型最后一层，使用logits输出
+        # 修改模型最后一层，使用logits输出
         if hasattr(model, 'sigmoid'):
             model.sigmoid = nn.Identity()  # 移除sigmoid，让BCEWithLogitsLoss内部处理
     else:
@@ -543,7 +571,7 @@ def create_teacher_model(dataset_name, processed_data):
     )
     
     # 确定是否使用logits输出
-    use_logits = (dataset_name == 'german')
+    use_logits = (dataset_name in ['german', 'xinwang'])
     
     # Train model with advanced techniques
     start_time = time.time()
@@ -587,7 +615,7 @@ def train_all_teacher_models(processed_data):
         _device_shown = True
     
     teacher_models = {}
-    datasets = ['uci', 'german', 'australian']
+    datasets = ['uci', 'german', 'australian', 'xinwang']
     
     from tqdm import tqdm
     

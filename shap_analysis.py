@@ -503,7 +503,7 @@ class SHAPAnalyzer:
         return original_names
     
     def visualize_shap_importance(self, dataset_name, shap_results, save_path=None):
-        """可视化SHAP特征重要性
+        """可视化SHAP特征重要性 - 改进配色和高分辨率
         
         Args:
             dataset_name: 数据集名称
@@ -515,33 +515,53 @@ class SHAPAnalyzer:
         
         # 获取特征重要性
         sorted_features = shap_results['sorted_features']
-        feature_names = [f[0] for f in sorted_features[:20]]  # 取前20个特征
-        importances = [f[1] for f in sorted_features[:20]]
+        feature_names = [f[0] for f in sorted_features[:10]]  # 只取前10个特征
+        importances = [f[1] for f in sorted_features[:10]]
         
-        # 创建图表
-        fig, ax = plt.subplots(figsize=(10, 8))
+        # 创建高分辨率图表
+        fig, ax = plt.subplots(figsize=(12, 8), dpi=150)
+        
+        # 使用渐变色彩方案 - 从深蓝到浅蓝
+        colors = plt.cm.RdYlBu_r(np.linspace(0.3, 0.8, len(feature_names)))
         
         # 绘制水平条形图
         y_pos = np.arange(len(feature_names))
-        ax.barh(y_pos, importances, color='#7BB3F0', edgecolor='black', linewidth=0.5)
+        bars = ax.barh(y_pos, importances, color=colors, edgecolor='#2C3E50', linewidth=1.2, alpha=0.85)
         
-        # 设置标签
+        # 在条形图上添加数值标签
+        for i, (bar, val) in enumerate(zip(bars, importances)):
+            ax.text(val + max(importances)*0.01, i, f'{val:.4f}', 
+                   va='center', fontsize=10, fontweight='bold', color='#2C3E50')
+        
+        # 设置标签 - 更大更清晰的字体
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(feature_names)
+        ax.set_yticklabels(feature_names, fontsize=11, fontweight='600')
         ax.invert_yaxis()  # 最重要的特征在顶部
-        ax.set_xlabel('Mean |SHAP Value|', fontsize=12)
-        ax.set_title(f'SHAP Feature Importance - {dataset_name.upper()}', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Mean |SHAP Value|', fontsize=13, fontweight='bold', color='#2C3E50')
+        ax.set_title(f'SHAP Feature Importance - {dataset_name.upper()}', 
+                    fontsize=16, fontweight='bold', color='#1A252F', pad=20)
         
-        # 添加网格
-        ax.grid(axis='x', alpha=0.3, linestyle='--')
+        # 美化网格
+        ax.grid(axis='x', alpha=0.25, linestyle='--', linewidth=0.8, color='#7F8C8D')
+        ax.set_axisbelow(True)
+        
+        # 设置背景色
+        ax.set_facecolor('#F8F9FA')
+        fig.patch.set_facecolor('white')
+        
+        # 添加边框
+        for spine in ax.spines.values():
+            spine.set_edgecolor('#2C3E50')
+            spine.set_linewidth(1.5)
         
         # 调整布局
         plt.tight_layout()
         
-        # 保存或显示
+        # 保存高分辨率图片
         if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
-            print(f"   📊 SHAP visualization saved: {save_path}")
+            plt.savefig(save_path, dpi=600, bbox_inches='tight', facecolor='white', 
+                       edgecolor='none', format='png', metadata={'Software': 'SHAP Analysis'})
+            print(f"   📊 SHAP visualization saved (600 DPI): {save_path}")
         
         plt.close()
 
