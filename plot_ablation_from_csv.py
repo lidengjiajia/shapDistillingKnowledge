@@ -85,29 +85,17 @@ def plot_topk_ablation(csv_path, output_path=None):
         ax.plot([max_k, max_k], [0.65, max_acc], 
                color=dataset_color, linestyle=':', alpha=0.4, linewidth=1.2, zorder=1)
         
-        # 智能标注位置 - 根据k值和准确率避免重叠
-        # 检查与其他点的距离，动态调整位置
-        if i == 0:  # 第一个点（k最小）
-            if max_acc > 0.78:
-                offset_x, offset_y = 10, -30
-                ha = 'left'
-            else:
-                offset_x, offset_y = 10, 25
-                ha = 'left'
-        elif i == 1:  # 第二个点（k中等）
-            if max_acc > 0.80:
-                offset_x, offset_y = -10, 30
-                ha = 'right'
-            else:
-                offset_x, offset_y = 10, -35
-                ha = 'left'
-        else:  # 第三个点（k最大）
-            if max_acc > 0.80:
-                offset_x, offset_y = -10, 25
-                ha = 'right'
-            else:
-                offset_x, offset_y = -10, -30
-                ha = 'right'
+        # 智能标注位置 - 保持在第一象限内，大幅拉开距离
+        # 根据实际数据：german(k=12), australian(k=18), uci(k=21)
+        if i == 0:  # 第一个点（k=12, german, acc=0.74）
+            offset_x, offset_y = 25, -55  # 向右下大幅偏移
+            ha = 'left'
+        elif i == 1:  # 第二个点（k=18, australian, acc=0.848）
+            offset_x, offset_y = 20, 45  # 向右上偏移，避免遮挡
+            ha = 'left'
+        else:  # 第三个点（k=21, uci黄色, acc=0.82）
+            offset_x, offset_y = 30, 50  # 向右上角偏移，避免遮挡黄色曲线
+            ha = 'left'
         
         ax.annotate(f'k={int(max_k)}\n{max_acc:.4f}', 
                    xy=(max_k, max_acc), 
@@ -241,15 +229,16 @@ def plot_depth_ablation(csv_path, output_path=None):
         ax.plot([max_depth, max_depth], [0.65, max_acc], 
                color=dataset_color, linestyle=':', alpha=0.4, linewidth=1.2, zorder=1)
         
-        # 智能标注位置 - 根据深度值分散标注，避免重叠
-        if i == 0:  # depth=4 (UCI)
-            offset_x, offset_y = -10, 30
-            ha = 'right'
-        elif i == 1:  # depth=6 (German)
-            offset_x, offset_y = 10, -35
+        # 智能标注位置 - 保持在第一象限内，大幅拉开距离
+        # 根据实际数据：uci(depth=4, acc=0.82), german(depth=6, acc=0.74), australian(depth=7, acc=0.848)
+        if i == 0:  # depth=4 (UCI, acc=0.82)
+            offset_x, offset_y = 25, 45  # 向右上大幅偏移，保持在第一象限
             ha = 'left'
-        else:  # depth=7 (Australian)
-            offset_x, offset_y = 10, 30
+        elif i == 1:  # depth=6 (German, acc=0.74)
+            offset_x, offset_y = 25, -55  # 向右下大幅偏移
+            ha = 'left'
+        else:  # depth=7 (Australian, acc=0.848)
+            offset_x, offset_y = 30, 40  # 向右上大幅偏移
             ha = 'left'
         
         ax.annotate(f'depth={int(max_depth)}\n{max_acc:.4f}', 
