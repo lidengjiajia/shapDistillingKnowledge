@@ -1,0 +1,29 @@
+﻿Dataset,Model,Accuracy,Precision,Recall,F1-Score,Parameters
+AUSTRALIAN,XGBoost,0.8333,0.8365,0.8333,0.8338,"{'max_depth': 5, 'learning_rate': 0.17174599875606156, 'n_estimators': 278, 'min_child_weight': 1, 'gamma': 0.23695866334313165, 'subsample': 0.7165207517340686, 'colsample_bytree': 0.8189257141968503, 'reg_alpha': 0.6552792549984787, 'reg_lambda': 0.15243771133710646, 'scale_pos_weight': np.float64(1.2378378378378379), 'random_state': 42, 'eval_metric': 'logloss'}"
+AUSTRALIAN,RandomForest,0.8333,0.8387,0.8333,0.8339,"{'n_estimators': 86, 'max_depth': 26, 'min_samples_split': 8, 'min_samples_leaf': 4, 'max_features': 'log2', 'random_state': 42, 'class_weight': 'balanced'}"
+AUSTRALIAN,Logistic_L2,0.8261,0.8359,0.8261,0.8266,{'C': 0.010735378215036786}
+AUSTRALIAN,LightGBM,0.8261,0.8437,0.8261,0.8263,"{'num_leaves': 20, 'max_depth': 9, 'learning_rate': 0.21498862971580895, 'n_estimators': 232, 'min_child_samples': 80, 'subsample': 0.6296178606936361, 'colsample_bytree': 0.7433862914177091, 'reg_alpha': 0.11586905952512971, 'reg_lambda': 0.8631034258755935, 'class_weight': 'balanced', 'random_state': 42, 'verbose': -1}"
+AUSTRALIAN,Logistic_L1,0.8116,0.8451,0.8116,0.8108,{'C': 0.202264383743026}
+AUSTRALIAN,SVM,0.8116,0.8337,0.8116,0.8116,"{'C': 0.05415244119402541, 'gamma': 'auto', 'kernel': 'rbf'}"
+AUSTRALIAN,DecisionTree,0.7609,0.7689,0.7609,0.7617,"{'max_depth': 13, 'min_samples_split': 5, 'min_samples_leaf': 1, 'criterion': 'entropy', 'random_state': 42, 'class_weight': 'balanced'}"
+GERMAN,RandomForest,0.7,0.709,0.7,0.7039,"{'n_estimators': 90, 'max_depth': 16, 'min_samples_split': 14, 'min_samples_leaf': 3, 'max_features': 'log2', 'random_state': 42, 'class_weight': 'balanced'}"
+GERMAN,XGBoost,0.68,0.703,0.68,0.6883,"{'max_depth': 10, 'learning_rate': 0.2109302710372824, 'n_estimators': 130, 'min_child_weight': 2, 'gamma': 0.24057041100295817, 'subsample': 0.7702143284127456, 'colsample_bytree': 0.8804650381575039, 'reg_alpha': 0.5932491601636256, 'reg_lambda': 0.0031072164879014873, 'scale_pos_weight': np.float64(0.42857142857142855), 'random_state': 42, 'eval_metric': 'logloss'}"
+GERMAN,SVM,0.67,0.6732,0.67,0.6715,"{'C': 4.467752817973908, 'gamma': 'auto', 'kernel': 'rbf'}"
+GERMAN,DecisionTree,0.67,0.697,0.67,0.6794,"{'max_depth': 6, 'min_samples_split': 10, 'min_samples_leaf': 10, 'criterion': 'entropy', 'random_state': 42, 'class_weight': 'balanced'}"
+GERMAN,Logistic_L2,0.66,0.725,0.66,0.674,{'C': 0.0019517224641449498}
+GERMAN,Logistic_L1,0.66,0.7158,0.66,0.6736,{'C': 0.2344184255314694}
+GERMAN,LightGBM,0.66,0.703,0.66,0.6724,"{'num_leaves': 127, 'max_depth': 7, 'learning_rate': 0.23184620679410228, 'n_estimators': 153, 'min_child_samples': 23, 'subsample': 0.9966755477841996, 'colsample_bytree': 0.9155806095922606, 'reg_alpha': 0.08934880367805847, 'reg_lambda': 0.8994074979832622, 'class_weight': 'balanced', 'random_state': 42, 'verbose': -1}"
+UCI,RandomForest,0.8118,0.7968,0.8118,0.8005,"{'n_estimators': 200, 'max_depth': 28, 'min_samples_split': 3, 'min_samples_leaf': 2, 'max_features': 'log2', 'random_state': 42, 'class_weight': 'balanced'}"
+UCI,XGBoost,0.795,0.7823,0.795,0.787,"{'max_depth': 10, 'learning_rate': 0.16133533031704153, 'n_estimators': 206, 'min_child_weight': 1, 'gamma': 0.13996782790322995, 'subsample': 0.8617561719142024, 'colsample_bytree': 0.8796317327352843, 'reg_alpha': 0.3255557375027965, 'reg_lambda': 0.0006952242573262553, 'scale_pos_weight': np.float64(3.5203415369161224), 'random_state': 42, 'eval_metric': 'logloss'}"
+UCI,DecisionTree,0.7782,0.778,0.7782,0.7781,"{'max_depth': 2, 'min_samples_split': 20, 'min_samples_leaf': 9, 'criterion': 'gini', 'random_state': 42, 'class_weight': 'balanced'}"
+UCI,LightGBM,0.7668,0.7816,0.7668,0.7731,"{'num_leaves': 65, 'max_depth': 10, 'learning_rate': 0.1657018346775953, 'n_estimators': 151, 'min_child_samples': 24, 'subsample': 0.6140054396740834, 'colsample_bytree': 0.6218276719061288, 'reg_alpha': 0.9902219178364078, 'reg_lambda': 0.7853275461666241, 'class_weight': 'balanced', 'random_state': 42, 'verbose': -1}"
+UCI,Logistic_L1,0.6788,0.7566,0.6788,0.7028,{'C': 0.6203312414676464}
+UCI,Logistic_L2,0.6748,0.7532,0.6748,0.6991,{'C': 0.001841026921996185}
+UCI,SVM,0.5765,0.7002,0.5765,0.6122,"{'C': 93.55051333262001, 'gamma': 'scale', 'kernel': 'rbf'}"
+XINWANG,RandomForest,0.898,0.8479,0.898,0.851,"{'n_estimators': 200, 'max_depth': 28, 'min_samples_split': 3, 'min_samples_leaf': 2, 'max_features': 'log2', 'random_state': 42, 'class_weight': 'balanced'}"
+XINWANG,XGBoost,0.8943,0.8502,0.8943,0.8588,"{'max_depth': 9, 'learning_rate': 0.09217005146877585, 'n_estimators': 186, 'min_child_weight': 1, 'gamma': 0.35425788446259227, 'subsample': 0.9632890503862365, 'colsample_bytree': 0.6749772732219859, 'reg_alpha': 0.06457652771921704, 'reg_lambda': 0.8315707247895328, 'scale_pos_weight': np.float64(8.835013748854262), 'random_state': 42, 'eval_metric': 'logloss'}"
+XINWANG,LightGBM,0.8837,0.8527,0.8837,0.864,"{'num_leaves': 150, 'max_depth': 8, 'learning_rate': 0.09219241902948704, 'n_estimators': 291, 'min_child_samples': 58, 'subsample': 0.8810796931031994, 'colsample_bytree': 0.6044089573993916, 'reg_alpha': 0.5732909776512292, 'reg_lambda': 0.5916836359300597, 'class_weight': 'balanced', 'random_state': 42, 'verbose': -1}"
+XINWANG,SVM,0.813,0.8291,0.813,0.8208,"{'C': 45.100737973305094, 'gamma': 'auto', 'kernel': 'rbf'}"
+XINWANG,DecisionTree,0.7791,0.8349,0.7791,0.8039,"{'max_depth': 2, 'min_samples_split': 20, 'min_samples_leaf': 9, 'criterion': 'gini', 'random_state': 42, 'class_weight': 'balanced'}"
+XINWANG,Logistic_L1,0.6447,0.8593,0.6447,0.7147,{'C': 56.69849511478853}
+XINWANG,Logistic_L2,0.641,0.8584,0.641,0.7119,{'C': 48.46867295142757}

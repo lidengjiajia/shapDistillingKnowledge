@@ -522,6 +522,41 @@ class KnowledgeDistillator:
             results[dataset_name]['best'] = best_result
             results[dataset_name]['best_k'] = best_k
             print(f"     Best Accuracy: {best_accuracy:.4f} with k={best_k}")  # 改为显示准确率
+            
+            # 🌲 保存最佳SHAP-KD模型的决策树规则和路径
+            if best_result is not None:
+                print(f"\n   🌲 Saving best SHAP-KD model rules and paths for {dataset_name.upper()}...")
+                data_dict = self.processed_data[dataset_name]
+                
+                # 保存决策规则
+                best_params = {
+                    'k': best_k,
+                    'temperature': best_result['temperature'],
+                    'alpha': best_result['alpha'],
+                    'max_depth': best_result['max_depth']
+                }
+                self._save_decision_tree_rules(
+                    model=best_result['model'],
+                    dataset_name=dataset_name,
+                    model_type='SHAP-KD',
+                    feature_names=best_result['selected_features'],
+                    params=best_params
+                )
+                
+                # 保存决策路径
+                selected_feature_names = best_result['selected_features']
+                feature_indices = [data_dict['feature_names'].index(feat) for feat in selected_feature_names]
+                X_test_selected = data_dict['X_test'][:, feature_indices]
+                
+                self._save_decision_tree_paths(
+                    model=best_result['model'],
+                    dataset_name=dataset_name,
+                    model_type='SHAP-KD',
+                    X_test=X_test_selected,
+                    y_test=data_dict['y_test'],
+                    feature_names=selected_feature_names,
+                    params=best_params
+                )
         
         # 保存Top-k消融实验数据和创建可视化
         print("\n📊 Saving Top-k ablation study data and creating visualizations...")
@@ -649,27 +684,41 @@ class KnowledgeDistillator:
             }
             print(f"      Accuracy: {shap_kd_result['accuracy']:.4f}")
             
-            # 🌲 保存SHAP-KD决策树规则
-            print(f"   🌲 Extracting and saving SHAP-KD decision tree rules...")
-            self._save_decision_tree_rules(
-                model=shap_kd_result['model'],
-                dataset_name=dataset_name,
-                model_type='SHAP-KD',
-                feature_names=shap_kd_result.get('feature_names', data_dict['feature_names'][:params.get('k', 10)]),
-                params=params
-            )
-            
-            # 🛤️ 保存SHAP-KD决策树路径（每个样本的具体路径）
-            print(f"   🛤️ Extracting and saving SHAP-KD decision tree paths...")
-            self._save_decision_tree_paths(
-                model=shap_kd_result['model'],
-                dataset_name=dataset_name,
-                model_type='SHAP-KD',
-                X_test=data_dict['X_test'][:, shap_kd_result.get('selected_features', range(params.get('k', 10)))],
-                y_test=data_dict['y_test'],
-                feature_names=shap_kd_result.get('feature_names', data_dict['feature_names'][:params.get('k', 10)]),
-                params=params
-            )
+            # 注意：规则和路径提取已在消融实验的最佳模型中完成，此处不重复保存
+            # 如需单独保存四模型对比的规则，可取消下方注释
+            # # 🌲 保存SHAP-KD决策树规则
+            # print(f"   🌲 Extracting and saving SHAP-KD decision tree rules...")
+            # self._save_decision_tree_rules(
+            #     model=shap_kd_result['model'],
+            #     dataset_name=dataset_name,
+            #     model_type='SHAP-KD',
+            #     feature_names=shap_kd_result.get('feature_names', data_dict['feature_names'][:params.get('k', 10)]),
+            #     params=params
+            # )
+            # 
+            # # 🛤️ 保存SHAP-KD决策树路径（每个样本的具体路径）
+            # print(f"   🛤️ Extracting and saving SHAP-KD decision tree paths...")
+            # 
+            # # 获取SHAP-KD使用的特征索引
+            # selected_feature_names = shap_kd_result.get('selected_features', data_dict['feature_names'][:params.get('k', 10)])
+            # if isinstance(selected_feature_names, list) and isinstance(selected_feature_names[0], str):
+            #     # 如果是特征名称列表，转换为索引
+            #     feature_indices = [data_dict['feature_names'].index(feat) for feat in selected_feature_names]
+            #     X_test_selected = data_dict['X_test'][:, feature_indices]
+            # else:
+            #     # 如果已经是索引，直接使用
+            #     X_test_selected = data_dict['X_test'][:, :params.get('k', 10)]
+            #     selected_feature_names = data_dict['feature_names'][:params.get('k', 10)]
+            # 
+            # self._save_decision_tree_paths(
+            #     model=shap_kd_result['model'],
+            #     dataset_name=dataset_name,
+            #     model_type='SHAP-KD',
+            #     X_test=X_test_selected,
+            #     y_test=data_dict['y_test'],
+            #     feature_names=selected_feature_names,
+            #     params=params
+            # )
             
             print(f"\n   ✅ {dataset_name.upper()} Comparison Complete")
             print(f"      Baseline DT: {baseline_dt_result['accuracy']:.4f}")

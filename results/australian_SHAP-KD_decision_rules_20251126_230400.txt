@@ -1,0 +1,334 @@
+================================================================================
+决策树规则提取 - AUSTRALIAN 数据集
+模型类型: SHAP-KD
+================================================================================
+
+模型参数:
+--------------------------------------------------------------------------------
+  k: 18
+  temperature: 3
+  alpha: 0.1
+  max_depth: 7
+
+决策树信息:
+--------------------------------------------------------------------------------
+  节点总数: 95
+  最大深度: 7
+  叶子节点数: 48
+  使用特征数: 18
+
+使用的特征:
+--------------------------------------------------------------------------------
+  1. feature_1
+  2. feature_2
+  3. feature_4
+  4. feature_6
+  5. feature_9
+  6. feature_12
+  7. feature_13
+  8. feature_0_1
+  9. feature_3_2
+  10. feature_3_3
+  11. feature_5_2
+  12. feature_5_3
+  13. feature_5_4
+  14. feature_5_5
+  15. feature_5_7
+  16. feature_5_8
+  17. feature_5_9
+  18. feature_7_1
+
+决策规则:
+================================================================================
+
+规则 1:
+      IF (feature_7_1 <= -0.0242) AND (feature_3_2 <= -0.9579) AND (feature_13 <= -0.3699)
+      THEN 预测类别 = 0
+           置信度 = 1.0000 (1/1 样本)
+           样本分布 = [1, 0]
+
+规则 2:
+        IF (feature_7_1 <= -0.0242) AND (feature_3_2 <= -0.9579) AND (feature_13 > -0.3699) AND (feature_13 <= 0.0310)
+        THEN 预测类别 = 1
+             置信度 = 1.0000 (1/1 样本)
+             样本分布 = [0, 1]
+
+规则 3:
+            IF (feature_7_1 <= -0.0242) AND (feature_3_2 <= -0.9579) AND (feature_13 > -0.3699) AND (feature_13 > 0.0310) AND (feature_3_2 <= -0.9668) AND (feature_3_3 <= -0.1046)
+            THEN 预测类别 = 1
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [0, 1]
+
+规则 4:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 <= -0.9579) AND (feature_13 > -0.3699) AND (feature_13 > 0.0310) AND (feature_3_2 <= -0.9668) AND (feature_3_3 > -0.1046) AND (feature_5_3 <= -0.3139)
+              THEN 预测类别 = 1
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [0, 1]
+
+规则 5:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 <= -0.9579) AND (feature_13 > -0.3699) AND (feature_13 > 0.0310) AND (feature_3_2 <= -0.9668) AND (feature_3_3 > -0.1046) AND (feature_5_3 > -0.3139)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 6:
+          IF (feature_7_1 <= -0.0242) AND (feature_3_2 <= -0.9579) AND (feature_13 > -0.3699) AND (feature_13 > 0.0310) AND (feature_3_2 > -0.9668)
+          THEN 预测类别 = 1
+               置信度 = 1.0000 (1/1 样本)
+               样本分布 = [0, 1]
+
+规则 7:
+          IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 <= 0.2037) AND (feature_13 <= 0.0310)
+          THEN 预测类别 = 0
+               置信度 = 1.0000 (1/1 样本)
+               样本分布 = [1, 0]
+
+规则 8:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 <= 0.2037) AND (feature_13 > 0.0310) AND (feature_3_2 <= -0.9407) AND (feature_6 <= -0.3727)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 9:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 <= 0.2037) AND (feature_13 > 0.0310) AND (feature_3_2 <= -0.9407) AND (feature_6 > -0.3727)
+              THEN 预测类别 = 1
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [0, 1]
+
+规则 10:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 <= 0.2037) AND (feature_13 > 0.0310) AND (feature_3_2 > -0.9407) AND (feature_4 <= -0.4538)
+              THEN 预测类别 = 0
+                   置信度 = 0.9215 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 11:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 <= 0.2037) AND (feature_13 > 0.0310) AND (feature_3_2 > -0.9407) AND (feature_4 > -0.4538)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 12:
+            IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 > 0.2037) AND (feature_3_3 <= 0.2620) AND (feature_4 <= 0.3974)
+            THEN 预测类别 = 0
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [1, 0]
+
+规则 13:
+            IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 > 0.2037) AND (feature_3_3 <= 0.2620) AND (feature_4 > 0.3974)
+            THEN 预测类别 = 1
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [0, 1]
+
+规则 14:
+            IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 > 0.2037) AND (feature_3_3 > 0.2620) AND (feature_5_4 <= -0.6273)
+            THEN 预测类别 = 0
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [1, 0]
+
+规则 15:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 > 0.2037) AND (feature_3_3 > 0.2620) AND (feature_5_4 > -0.6273) AND (feature_4 <= 2.4007)
+              THEN 预测类别 = 0
+                   置信度 = 0.9397 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 16:
+              IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 <= 10.1366) AND (feature_3_3 > 0.2037) AND (feature_3_3 > 0.2620) AND (feature_5_4 > -0.6273) AND (feature_4 > 2.4007)
+              THEN 预测类别 = 0
+                   置信度 = 0.5341 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 17:
+      IF (feature_7_1 <= -0.0242) AND (feature_3_2 > -0.9579) AND (feature_5_5 > 10.1366)
+      THEN 预测类别 = 1
+           置信度 = 1.0000 (1/1 样本)
+           样本分布 = [0, 1]
+
+规则 18:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 <= 0.6938) AND (feature_13 <= -1.5726) AND (feature_5_2 <= -0.2184) AND (feature_5_4 <= -0.6273)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 19:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 <= 0.6938) AND (feature_13 <= -1.5726) AND (feature_5_2 <= -0.2184) AND (feature_5_4 > -0.6273)
+              THEN 预测类别 = 0
+                   置信度 = 0.6690 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 20:
+            IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 <= 0.6938) AND (feature_13 <= -1.5726) AND (feature_5_2 > -0.2184)
+            THEN 预测类别 = 0
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [1, 0]
+
+规则 21:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 <= 0.6938) AND (feature_13 > -1.5726) AND (feature_3_2 <= -0.4227) AND (feature_0_1 <= -0.6486)
+              THEN 预测类别 = 1
+                   置信度 = 0.5041 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 22:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 <= 0.6938) AND (feature_13 > -1.5726) AND (feature_3_2 <= -0.4227) AND (feature_0_1 > -0.6486)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 23:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 <= 0.6938) AND (feature_13 > -1.5726) AND (feature_3_2 > -0.4227) AND (feature_5_2 <= -0.2344)
+              THEN 预测类别 = 1
+                   置信度 = 0.7216 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 24:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 <= 0.6938) AND (feature_13 > -1.5726) AND (feature_3_2 > -0.4227) AND (feature_5_2 > -0.2344)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 25:
+          IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 > 0.6938) AND (feature_4 <= -0.7466)
+          THEN 预测类别 = 1
+               置信度 = 1.0000 (1/1 样本)
+               样本分布 = [0, 1]
+
+规则 26:
+            IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 > 0.6938) AND (feature_4 > -0.7466) AND (feature_3_3 <= -0.6478)
+            THEN 预测类别 = 0
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [1, 0]
+
+规则 27:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 > 0.6938) AND (feature_4 > -0.7466) AND (feature_3_3 > -0.6478) AND (feature_5_2 <= -0.2294)
+              THEN 预测类别 = 1
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [0, 1]
+
+规则 28:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 <= 0.0310) AND (feature_5_8 > 0.6938) AND (feature_4 > -0.7466) AND (feature_3_3 > -0.6478) AND (feature_5_2 > -0.2294)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 29:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 <= -0.5675) AND (feature_13 <= 1.2337) AND (feature_13 <= 0.5655) AND (feature_4 <= 0.4164)
+              THEN 预测类别 = 0
+                   置信度 = 0.7481 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 30:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 <= -0.5675) AND (feature_13 <= 1.2337) AND (feature_13 <= 0.5655) AND (feature_4 > 0.4164)
+              THEN 预测类别 = 1
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [0, 1]
+
+规则 31:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 <= -0.5675) AND (feature_13 <= 1.2337) AND (feature_13 > 0.5655) AND (feature_3_2 <= -0.1355)
+              THEN 预测类别 = 1
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [0, 1]
+
+规则 32:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 <= -0.5675) AND (feature_13 <= 1.2337) AND (feature_13 > 0.5655) AND (feature_3_2 > -0.1355)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 33:
+          IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 <= -0.5675) AND (feature_13 > 1.2337)
+          THEN 预测类别 = 1
+               置信度 = 1.0000 (1/1 样本)
+               样本分布 = [0, 1]
+
+规则 34:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 > -0.5675) AND (feature_13 <= 0.2982) AND (feature_0_1 <= 0.5088) AND (feature_4 <= 0.5004)
+              THEN 预测类别 = 1
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [0, 1]
+
+规则 35:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 > -0.5675) AND (feature_13 <= 0.2982) AND (feature_0_1 <= 0.5088) AND (feature_4 > 0.5004)
+              THEN 预测类别 = 1
+                   置信度 = 0.5030 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 36:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 > -0.5675) AND (feature_13 <= 0.2982) AND (feature_0_1 > 0.5088) AND (feature_0_1 <= 0.9595)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 37:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 > -0.5675) AND (feature_13 <= 0.2982) AND (feature_0_1 > 0.5088) AND (feature_0_1 > 0.9595)
+              THEN 预测类别 = 1
+                   置信度 = 0.5055 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 38:
+            IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 > -0.5675) AND (feature_13 > 0.2982) AND (feature_4 <= -0.0824)
+            THEN 预测类别 = 1
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [0, 1]
+
+规则 39:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 > -0.5675) AND (feature_13 > 0.2982) AND (feature_4 > -0.0824) AND (feature_3_2 <= 0.4388)
+              THEN 预测类别 = 1
+                   置信度 = 0.7328 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 40:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 <= -0.2015) AND (feature_13 > 0.0310) AND (feature_0_1 > -0.5675) AND (feature_13 > 0.2982) AND (feature_4 > -0.0824) AND (feature_3_2 > 0.4388)
+              THEN 预测类别 = 0
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [1, 0]
+
+规则 41:
+        IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 <= -1.0381) AND (feature_3_3 <= 2.1350)
+        THEN 预测类别 = 1
+             置信度 = 1.0000 (1/1 样本)
+             样本分布 = [0, 1]
+
+规则 42:
+          IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 <= -1.0381) AND (feature_3_3 > 2.1350) AND (feature_0_1 <= 0.9595)
+          THEN 预测类别 = 0
+               置信度 = 1.0000 (1/1 样本)
+               样本分布 = [1, 0]
+
+规则 43:
+          IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 <= -1.0381) AND (feature_3_3 > 2.1350) AND (feature_0_1 > 0.9595)
+          THEN 预测类别 = 1
+               置信度 = 1.0000 (1/1 样本)
+               样本分布 = [0, 1]
+
+规则 44:
+          IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 > -1.0381) AND (feature_5_2 <= -0.1174) AND (feature_4 <= -0.3671)
+          THEN 预测类别 = 1
+               置信度 = 1.0000 (1/1 样本)
+               样本分布 = [0, 1]
+
+规则 45:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 > -1.0381) AND (feature_5_2 <= -0.1174) AND (feature_4 > -0.3671) AND (feature_4 <= -0.0228) AND (feature_13 <= -0.1026)
+              THEN 预测类别 = 1
+                   置信度 = 1.0000 (1/1 样本)
+                   样本分布 = [0, 1]
+
+规则 46:
+              IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 > -1.0381) AND (feature_5_2 <= -0.1174) AND (feature_4 > -0.3671) AND (feature_4 <= -0.0228) AND (feature_13 > -0.1026)
+              THEN 预测类别 = 0
+                   置信度 = 0.6555 (0/1 样本)
+                   样本分布 = [0, 0]
+
+规则 47:
+            IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 > -1.0381) AND (feature_5_2 <= -0.1174) AND (feature_4 > -0.3671) AND (feature_4 > -0.0228)
+            THEN 预测类别 = 1
+                 置信度 = 1.0000 (1/1 样本)
+                 样本分布 = [0, 1]
+
+规则 48:
+        IF (feature_7_1 > -0.0242) AND (feature_5_2 > -0.2015) AND (feature_13 > -1.0381) AND (feature_5_2 > -0.1174)
+        THEN 预测类别 = 1
+             置信度 = 1.0000 (1/1 样本)
+             样本分布 = [0, 1]
+
+================================================================================
+总共提取了 48 条规则
+================================================================================

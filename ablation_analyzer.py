@@ -129,7 +129,10 @@ class AblationStudyAnalyzer:
         """绘制Top-k特征数量的消融分析 - 曲线上每个点都是该k值的最高准确率"""
         max_points = []  # 存储每个数据集的整体最高点
         
+        # 排除xinwang数据集，只显示german, australian, uci
         for dataset in df['dataset'].unique():
+            if dataset == 'xinwang':
+                continue
             dataset_data = df[df['dataset'] == dataset]
             
             # 按k值分组，取每个k值的最高准确率（而不是平均值）
@@ -185,13 +188,24 @@ class AblationStudyAnalyzer:
         ax.grid(True, alpha=0.3)
         ax.legend(loc='upper right')  # 图例放右上角
         
-        # 设置x轴间隔为5，过滤掉None值
+        # 自适应x轴范围和刻度间隔
         k_values = sorted([k for k in df['k'].unique() if k is not None])
-        if k_values:  # 如果有有效的k值
-            ax.set_xticks([k for k in k_values if k % 5 == 0])  # x轴间隔为5
-        else:
-            # 如果没有k值，使用默认的x轴刻度
-            ax.set_xticks(sorted(df['k'].dropna().unique()) if 'k' in df.columns else [])
+        if k_values:
+            min_k, max_k = min(k_values), max(k_values)
+            k_range = max_k - min_k
+            
+            # 根据范围自动选择合适的刻度间隔
+            if k_range <= 20:
+                interval = 2  # 小范围用间隔2
+            elif k_range <= 50:
+                interval = 5  # 中等范围用间隔5
+            else:
+                interval = 10  # 大范围用间隔10
+            
+            # 设置x轴刻度和范围
+            tick_values = [k for k in k_values if k % interval == 0 or k == min_k or k == max_k]
+            ax.set_xticks(tick_values)
+            ax.set_xlim(min_k - k_range*0.02, max_k + k_range*0.02)  # 两端留2%空白
         
     def _plot_temperature_ablation(self, df, ax, dataset_colors):
         """绘制温度参数的消融分析"""
@@ -267,7 +281,10 @@ class AblationStudyAnalyzer:
         """绘制决策树深度的消融分析 - 曲线上每个点都是该depth值的最高准确率"""
         max_points = []  # 存储每个数据集的整体最高点
         
+        # 排除xinwang数据集，只显示german, australian, uci
         for dataset in df['dataset'].unique():
+            if dataset == 'xinwang':
+                continue
             dataset_data = df[df['dataset'] == dataset]
             # 按深度分组，取每个depth值的最高准确率（而不是平均值）
             depth_max_grouped = dataset_data.groupby('max_depth')['accuracy'].max().reset_index()
@@ -315,8 +332,15 @@ class AblationStudyAnalyzer:
         ax.set_ylim(0.6, 1.0)  # 设置y轴范围从0.6到1.0
         ax.grid(True, alpha=0.3)
         ax.legend(loc='upper right', fontsize=10)  # 图例放右上角
+        
+        # 自适应x轴范围
         if 'max_depth' in df.columns:
-            ax.set_xticks(sorted(df['max_depth'].unique()))
+            depth_values = sorted(df['max_depth'].unique())
+            if depth_values:
+                min_depth, max_depth = min(depth_values), max(depth_values)
+                depth_range = max_depth - min_depth
+                ax.set_xticks(depth_values)
+                ax.set_xlim(min_depth - depth_range*0.05, max_depth + depth_range*0.05)  # 两端留5%空白
         
     def load_and_visualize_existing_data(self, data_path):
         """从已有数据文件加载数据"""
